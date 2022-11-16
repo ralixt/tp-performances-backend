@@ -1,0 +1,11 @@
+@startuml
+
+class Cache <<singleton>> {
+  - <<readonly>> TagAwareAdapterInterface cache
+  - __construct()
+  + {static} get() TagAwareAdapterInterface
+}
+
+note right of Cache : La méthode get() est statique
+
+@enduml

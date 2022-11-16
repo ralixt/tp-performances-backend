@@ -1,0 +1,11 @@
+@startuml
+
+class Database <<singleton>> {
+  - PDO pdo
+  - __construct()
+  + {static} get() : PDO
+}
+
+note right of Database : La méthode get() est statique
+
+@enduml
