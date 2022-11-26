@@ -19,21 +19,28 @@ Pour chaque question numérotée, vous devrez effectuer un commit pour que je pu
 
 Vous créerez également un fichier "TP.md" qui vous servira de compte rendu où vous noterez certaines réponses aux questions et que vous versionnerez sur Git.
 
+L'application étant très lente au début, vous êtes autorisé à ajouter `LIMIT 10` à la fin de la requête au début de `App\Services\Hotel\UnoptimizedHotelService::list()`. **Vous devrez cependant retirer cette limite lors de vos mesures pour le compte rendu**.
+
 ## Partie 1 : Faire fonctionner l'application
 - Décompressez l'archive `src/assets/images.zip` pour avoir un dossier `src/assets/images`.
 - Lancez Docker avec la commande `docker compose up`
 - Ouvrez PHPMyAdmin sur `http://localhost:8080` et importez le fichier `./database.sql.gz` dans la base de données `tp`.
+- Dans Docker Desktop, accédez au terminal du container `backend` et lancez la commande `composer install`
 - Ouvrez l'application sur `http://localhost`
 
 ## Partie 2 : Mesurer les performances
 
-1. **Installez l'extension navigateur [*Page load time*](https://chrome.google.com/webstore/detail/page-load-time/fploionmjgeclbkemipmkogoaohcdbig) et affichez-la constamment dans votre navigateur**.
+1. **Installez l'extension navigateur [*Page load time*](https://chrome.google.com/webstore/detail/page-load-time/fploionmjgeclbkemipmkogoaohcdbig) et affichez-la constamment dans votre navigateur (sur Chrome cliquez sur l'icône puzzle en haut à droite et cliquez sur l'icône punaise)**. ![](docs/assets/screenshot-pin-chrome-ext.png)
 
 Vous disposez d'une classe utilitaire `src/Common/Timers.php`. Elle permet d'effectuer des mesures de performances de certaines portions de code et de les visualiser dans le navigateur.
 
 2. **Ouvrez le fichier `src/Common/Timers.php` et observez les commentaires de documentation pour comprendre comment fonctionne cette classe. Utilisez cette classe pour mesurer les temps d'exécution de 3 méthodes qui vous semblent particulièrement consommatrices de ressources dans le service `src/Services/Hotel/UnoptimizedHotelService.php`**. **Indiquez dans votre compte rendu le nom de ces méthodes et leur temps d'exécution sur une requête**.
+<details>
+    <summary><b>ℹ️ Indice : Comment bien choisir les fonctions à analyser</b></summary>
+Il est inutile d'analyser de fonctions de haut niveau, visez des fonctions plus imbriquées. En effet, si vous mesurez des fonctions de haut niveau, elles paraîtront plus longues, car elles incluront leurs fonctions sous-jacentes. Vous serez donc biaisé en pensant que ce sont les fonctions de haut niveau qui sont à optimiser alors que ce sont les fonctions qu'elles appellent.
+</details>
 
-> Pour consulter les temps mesurés, ouvrez vos ChromeDevTools (Chrome, Brave, Edge, ...) et dans l'onglet "Network", filtrez sur le type "Doc". Cliquez sur la ligne
+> Pour consulter les temps mesurés, ouvrez vos ChromeDevTools (Chrome, Brave, Edge, ...) et dans l'onglet "Network", cliquez sur le type "Doc". Cliquez sur la ligne
 `localhost` (dans la colonne `name` sinon ça ne marchera pas) et dans la fenêtre qui s'affiche, consultez l'onglet "Timing", puis observez la section "Server Timing".
 
 **<div style="text-align:center">COMMIT</div>**
@@ -44,7 +51,7 @@ Vous disposez d'une classe utilitaire `src/Common/Timers.php`. Elle permet d'eff
 - Dans la barre latérale noire choisissez "*Add data*" puis "*PHP*".
 - Cliquez sur "*Begin installation*" puis sélectionnez "*On host standard*"
 - Dans la section "*1 Give your application a name*" saisissez `TP performances Backend`
-- Dans la section "*2 Install the agent*" choisissez "*apt*" et dans le texte de l'item "*6. Configure your license key and application name*" copiez votre license key `sed -i -e "s/REPLACE_WITH_REAL_KEY/__LICENCE_KEY__` et saisissez-la dans l'entrée `NEW_RELIC_LICENSE_KEY` de votre `.env`.
+- Dans la section "*2 Install the agent*" choisissez "*apt*" et dans le texte de l'item "*6. Configure your license key and application name*" copiez votre *license key* `sed -i -e "s/REPLACE_WITH_REAL_KEY/__LICENCE_KEY__/` (donc votre *license key* est entre les deux `/`) et saisissez-la dans l'entrée `NEW_RELIC_LICENSE_KEY` de votre `.env`.
 - Dans la section "*4 Connect with your logs and infrastructure*" dans l'onglet "*Linux*" copiez la valeur de `NEW_RELIC_API_KEY` et `NEW_RELIC_ACCOUNT_ID` et reportez-les dans votre `.env`.
 - **Reconstruisez le container Docker `backend` pour qu'il prenne en compte les modifications du fichier `.env` en exécutant la commande `docker compose up --build backend`**.
 - Sur la page de NewRelic, Cliquez sur "*See your data*" et actualisez la page `http://localhost` pour déclencher un envoi de données.
@@ -58,6 +65,29 @@ Vous disposez d'une classe utilitaire `src/Common/Timers.php`. Elle permet d'eff
 **<div style="text-align:center">COMMIT</div>**
 
 5. **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*entre 5 et 4 méthodes sont concernées*). **Dans votre compte rendu, listez les opérations (pas besoin de mettre le code) pour lesquelles une délégation à la base de données vous semble pertinente**. **Implémentez ces requêtes dans le service**.
+<details>
+    <summary>ℹ️ <b>Indice : Comment obtenir plusieurs valeurs des tables <code>meta</code> dans la même requête ?</b></summary>
+Vous pouvez faire des <code>INNER JOIN</code> avec alias. Par exemple :
+<div class="highlight highlight-source-sql notranslate position-relative overflow-auto">
+
+<pre>
+SELECT
+    user.ID AS id,
+    user.display_name AS name,
+    latData.meta_value AS lat,
+    lngData.meta_value AS lng
+FROM
+    wp_users AS USER
+
+    -- geo lat
+    INNER JOIN tp.wp_usermeta AS latData ON latData.user_id = user.ID
+        AND latData.meta_key = 'geo_lat'
+    -- geo lng
+    INNER JOIN tp.wp_usermeta AS lngData ON lngData.user_id = user.ID
+        AND lngData.meta_key = 'geo_lng'
+</pre>
+</div>
+</details>
 
 **<div style="text-align:center">COMMIT</div>**
 
