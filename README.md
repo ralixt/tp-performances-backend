@@ -112,9 +112,12 @@ Contrôle des résultats de filtre
 
 **<div style="text-align:center">COMMIT</div>**
 
-8. **En analysant le code et en vous aidant des `Timers`, trouvez quelle méthode de `UnoptimizedHotelService` est appelé un grand nombre de fois (10x par hôtel affiché !). Réécrivez-la en mêlant SQL et PHP pour diviser le nombre de cette requête par 10** (*vous devrez peut-être supprimer une méthode*). **Notez dans votre compte rendu les différences de temps de chargement**.
+8. **Modifiez votre système de Cache pour cette fois-ci implémentez un cache Redis. Vous trouverez la documentation nécessaire sur la page [Redis Cache Adapter](https://symfony.com/doc/current/components/cache/adapters/redis_adapter.html). Vous devriez constater une amélioration des performances de chargement comparé à la méthode basée sur les fichiers système**.
+- L'hôte de la base Redis n'est pas `localhost` mais `redis` dans notre contexte Docker compose. Votre DSN devrait donc être `redis://redis`.
 
 **<div style="text-align:center">COMMIT</div>**
 
-9. **Modifiez votre système de Cache pour cette fois-ci implémentez un cache Redis. Vous trouverez la documentation nécessaire sur la page [Redis Cache Adapter](https://symfony.com/doc/current/components/cache/adapters/redis_adapter.html). Vous devriez constater une amélioration des performances de chargement comparé à la méthode basée sur les fichiers système**.
-- L'hôte de la base Redis n'est pas `localhost` mais `redis` dans notre contexte Docker compose. Votre DSN devrait donc être `redis://redis`.
+9. **En analysant le code et en vous aidant des `Timers`, trouvez quelle méthode de `UnoptimizedHotelService` est appelé un grand nombre de fois (10x par hôtel affiché !). Réécrivez-la en mêlant SQL et PHP pour diviser le nombre de cette requête par 10** (*vous devrez peut-être supprimer une méthode*). **Notez dans votre compte rendu les différences de temps de chargement**.
+
+**<div style="text-align:center">COMMIT</div>**
+
