@@ -12,6 +12,7 @@ namespace App\Common;
  * myFunctionToMeasure();
  * $timer->endTimer('myLabel', $timerId);
  *
+ * // Utilisez cette ligne une seule fois. Écrivez-la juste avant que l'application ne commence à écrire du texte dans le navigateur.
  * header('Server-Timing: ' . Timers::getInstance()->getTimers() );
  * ```
  */
