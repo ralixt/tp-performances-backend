@@ -2,10 +2,11 @@
 
 class Cache <<singleton>> {
   - <<readonly>> TagAwareAdapterInterface cache
+  - {static} Cache instance
   - __construct()
   + {static} get() TagAwareAdapterInterface
 }
 
-note right of Cache : La méthode get() est statique
+note right of Cache : La méthode get() et la propriété instance sont statiques
 
 @enduml
