@@ -100,7 +100,7 @@ Contrôle des résultats de filtre
 
 **<div style="text-align:center">COMMIT</div>**
 
-6. **Inspectez la structure des tables de la base de données. Outre le fait que les types soient horribles, il n'y a surtout aucun index. Ajoutez des indexes sur les colonnes qui vous semblent pertinentes. Notez dans votre compte rendu les colonnes que vous avez choisies et notez aussi l'amélioration du temps de chargemnt que vous observez.** 
+6. **Inspectez la structure des tables de la base de données. Outre le fait que les types soient horribles, il n'y a surtout aucun index. Maintenant que vous avez ajouté des conditions SQL, vous devriez savoir sur quelles colonnes ajouter des indexes pour améliorer les performances. Notez dans votre compte rendu les colonnes que vous avez choisies et ainsi que le temps de chargement avant/après l'ajout de vos indexes.** 
 
 **<div style="text-align:center">COMMIT</div>**
 
