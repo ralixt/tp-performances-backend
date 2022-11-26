@@ -64,7 +64,8 @@ Il est inutile d'analyser de fonctions de haut niveau, visez des fonctions plus 
   
 **<div style="text-align:center">COMMIT</div>**
 
-5. **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*entre 5 et 4 méthodes sont concernées*). **Dans votre compte rendu, listez les opérations (pas besoin de mettre le code) pour lesquelles une délégation à la base de données vous semble pertinente**. **Implémentez ces requêtes dans le service**.
+5. *Lisez jusqu'au bout avant de commencer !* **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*3 méthodes sont concernées, mais une est différente de celles trouvées à la question 2 ! Même si elle est proche*). **Implémentez ces requêtes dans le service et contrôlez que vos filtres fonctionnent avec les valeurs de l'image ci-dessous. Vous devriez avoir le même résultat. Dans votre compte rendu, saisissez le code SQL initial et son temps d'exécution grâce à vos `Timers`, puis notez vos nouvelles requêtes et leur temps d'exécution**.
+
 <details>
     <summary>ℹ️ <b>Indice : Comment obtenir plusieurs valeurs des tables <code>meta</code> dans la même requête ?</b></summary>
 Vous pouvez faire des <code>INNER JOIN</code> avec alias. Par exemple :
@@ -88,6 +89,14 @@ FROM
 </pre>
 </div>
 </details>
+
+<details>
+    <summary>ℹ️ <b>Indice : Comment gérer l'écriture des <code>WHERE</code> en fonction des conditions de <code>$args</code> ?</b></summary>
+Vous pouvez écrire votre requête SQL dans une variable <code>$query</code> jusqu'aux instructions <code>WHERE</code>. Créez ensuite un tableau <code>$whereClauses = []</code>, qui contiendra vos conditions. Ensuite, dans vos blocs <code>if</code>, si une entrée de <code>$arg</code> vous indique qu'il faut ajouter une condition, ajoutez votre instruction SQL dans votre tableau. Ensuite, si votre tableau a au moins une entrée, faites <code>$query .= implode(' AND ', $whereClauses );</code>
+</details>
+
+Contrôle des résultats de filtre
+![](docs/assets/controle-resultats-q5.png)
 
 **<div style="text-align:center">COMMIT</div>**
 
