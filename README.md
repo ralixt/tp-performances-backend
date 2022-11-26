@@ -104,13 +104,7 @@ Contrôle des résultats de filtre
 
 **<div style="text-align:center">COMMIT</div>**
 
-7. **En utilisant NewRelic (instructions ci-dessous), repérez une méthode du service `UnoptimizedHotelService` qui est appelé un grand nombre de fois. Indiquez dans votre compte rendu son nom et son nombre d'appels. Réécrivez là de sorte à diviser par 10 le nombre d'appels à la base de données, vous pourrez utiliser PHP pour associer les données récupérées).**
-- Pour analyser une requête, rendez-vous sur [NewRelic](https://one.eu.newrelic.com/)
-- Dans la barre latérale noire, cliquez sur "*All entities*" puis dans la liste sur "*TP performances Backend*".
-- Dans le menu latéral gauche de la section centrale, cliquez sur "*Transactions*" qui se trouve dans la section "*Monitor*".
-- Si vous n'avez aucune transaction, n'hésitez pas à augmenter la plage horaire en haut à droite de l'écran. Il peut y avoir un certain délai entre l'exécution d'une requête et son affichage dans NewRelic, n'hésitez pas à utiliser les `Timers` pour des mesures moins précises mais plus rapides.
-- Dans la section "*Top 20 transactions*" cliquez sur "*index.php*". Vous devriez voir dans la section "*Breakdown table*" des informations intéressantes, mais peut-être pas la méthode que vous vouliez.
-- Dans votre code PHP, ajoutez la ligne `newrelic_add_custom_tracer(__METHOD__);` au début des méthodes que vous voulez inspecter. Elles devraient être mesurées par la suite.
+7. **En analysant le code et en vous aidant des `Timers`, trouvez quelle méthode de `UnoptimizedHotelService` est appelé un grand nombre de fois (10x par hôtel affiché !). Réécrivez-la en mêlant SQL et PHP pour diviser le nombre de cette requête par 10** (*vous devrez peut-être supprimer une méthode*). **Notez dans votre compte rendu les différences de temps de chargement**.
 
 **<div style="text-align:center">COMMIT</div>**
 
