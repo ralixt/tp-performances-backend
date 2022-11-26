@@ -60,7 +60,7 @@ Il est inutile d'analyser de fonctions de haut niveau, visez des fonctions plus 
 
 ![](docs/assets/singleton-db.png)
 
-4. **Commencez par réduire le nombre de connexions `PDO` dans votre application. Deux de vos services les utilisent `UnoptimizedHotelService` et `RoomService`. Commencez par ajouter un timer sur la méthode `UnoptimizedHotelService::getDB()` et notez le temps qu'elle prend dans votre compte rendu. Créez ensuite un Singleton <u>sans utiliser le `SingletonTrait`</u> pour votre base de données et utilisez-le dans vos services. Notez dans votre compte rendu par combien vous avez amélioré le temps de chargement de la page.**
+4. **Tout d'abord, réduisez le nombre de connexions `PDO` dans votre application. Commencez par ajouter un timer sur la méthode `UnoptimizedHotelService::getDB()` et notez le temps qu'elle prend dans votre compte rendu. Deux de vos services les utilisent `UnoptimizedHotelService` et `RoomService`, vous allez donc créer un Singleton <u>sans utiliser le `SingletonTrait`</u> pour votre base de données et l'utiliser dans vos services deux services. Notez dans votre compte rendu par combien vous avez amélioré le temps de chargement de la page et le nouveau temps enregistré pour la méthode `UnoptimizedHotelService::getDB()`.**
   
 **<div style="text-align:center">COMMIT</div>**
 
