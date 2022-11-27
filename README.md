@@ -63,6 +63,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 
 > - [ℹ️ Indice n°3 : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](docs/indice-3.md)
 > - [ℹ️ Indice n°4 : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](docs/indice-4.md)
+> - [ℹ️ Indice n°9 : Comment inspecter les requêtes qui sont effectuées sur la DB ?](docs/indice-9.md)
 
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 
@@ -88,6 +89,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 > - [ℹ️ Indice n°4 : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](docs/indice-4.md)
 > - [ℹ️ Indice n°5 : Utiliser des sous-requêtes dans les `INNER JOIN`](/docs/indice-5.md)
 > - [ℹ️ Indice n°6 : Calculer une distance entre deux points GPS en SQL](/docs/indice-6.md)
+> - [ℹ️ Indice n°9 : Comment inspecter les requêtes qui sont effectuées sur la DB ?](docs/indice-9.md)
 
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 
@@ -112,6 +114,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 
 > - [ℹ️ Indice n°7 : Comment générer la requête SQL de création d'une table ?](docs/indice-7.md)
 > - [ℹ️ Indice n°8 : Comment insérer du contenu dans une table à partir du retour d'une requête ?](docs/indice-8.md)
+> - [ℹ️ Indice n°9 : Comment inspecter les requêtes qui sont effectuées sur la DB ?](docs/indice-9.md)
 
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 
@@ -119,8 +122,11 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 
 Les responsables marketing de l'entreprise vous demandent de ne plus charger les avis des hôtels depuis votre base de données actuelle. Ils souhaitent utiliser un service tiers de d'avis (comme *Avis vérifiés* ou *Trustpilot*) afin de mettre les internautes plus en confiance. Problème, ce service est gratuit et les serveurs sont de piètre qualité et lents à répondre, mais vous n'avez pas d'autre choix que d'utiliser ce service sur lequel **vous n'avez aucun contrôle sur le code**.
 
+![](docs/assets/api_reviews_service.png)
+
 9. **Créez un service `App\Services\Reviews\APIReviewsService` en vous basant sur le schéma UML ci-dessus. Au sein de ce dernier, vous effectuerez des requêtes HTTP depuis PHP pour charger les avis de vos hôtels via l'API mise à disposition par le service *CheapTrustedReviews*. Vous utiliserez ensuite ce service dans votre service d'hôtel. Notez dans votre compte rendu les différences de temps de chargement qu'entraînent l'utilisation de cette API.**
-- Bien évidemment, *CheapTrustedReviews* n'existe pas IRL (du moins je l'espère), mais vous pouvez y accédez <u>depuis l'intérieur d'un container Docker du TP</u> à l'url `http://cheap-trusted-reviews.fake/`.
+- *Si j'étais vous, je surchargerais `RewordkedHotelService::convertEntityFromArray()` pour changer juste les deux valeurs des commentaires avec un appel de `ApiReviewsService::get()`.*
+- Bien évidemment, *CheapTrustedReviews* n'existe pas IRL (du moins je l'espère), mais vous pouvez y accédez <u>depuis l'intérieur d'un container Docker du TP</u> à l'url `http://cheap-trusted-reviews.fake/`. Si vous voulez faire des tests, vous pouvez y accéder sur `http://localhost:8888`.
 - Pour récupérer un avis d'hôtel, utilisez l'URL `http://cheap-trusted-reviews.fake/?hotel_id={hotelId}` qui vous retournera pour un hôtel donné un objet JSON comme ceci : 
 ```json
 {
@@ -133,14 +139,49 @@ Les responsables marketing de l'entreprise vous demandent de ne plus charger les
 ```
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 
-10. Si vous avez laissé vos timers de la question 2., vous devriez savoir quelles sont les 3 grosses méthodes qui sont consommatrices de ressources. **Implémentez un système de cache pour réduire l'occurrence de ces calculs. Notez dans votre compte rendu l'amélioration du temps de la requête**.
-- Installez la librairie [Symfony Cache](https://symfony.com/doc/current/components/cache.html) en suivant les instructions de la page. Pour avoir accès à Composer, utilisez le container Docker `backend` en allant dans l'onglet "*terminal*" de Docker Desktop sur la page du container. *Pro tips : utilisez la commande `bash` pour avoir un meilleur terminal (navigation au clavier, historique de commandes, couleurs, autocompletion, ...)*.
+![](docs/assets/cache_singleton.png)
+10. Même si vous n'avez aucun contrôle sur les performances de *http://cheap-trusted-reviews.fake*, vous pouvez **mettre en cache ses réponses pour mitiger l'impact de ce service sur votre application**
+- **Installez la librairie [Symfony Cache](https://symfony.com/doc/current/components/cache.html)** en suivant les instructions de la page. 
+- Pour avoir accès à Composer, utilisez le container Docker `backend` en allant dans l'onglet "*terminal*" de Docker Desktop sur la page du container. *Pro tips : utilisez la commande `bash` pour avoir un meilleur terminal (navigation au clavier, historique de commandes, couleurs, autocompletion, ...)*.
 - Créez une classe `App\Common\Cache` en suivant l'approche Singleton et en vous basant sur le schéma UML ci-dessus. (*La classe `AdapterInterface` est dans le namespace `Symfony\Component\Cache\Adapter`*).
 - **Paramétrez un cache basé sur Redis. Vous trouverez la documentation nécessaire sur la page [Redis Cache Adapter](https://symfony.com/doc/current/components/cache/adapters/redis_adapter.html)**. L'hôte de la base Redis n'est pas `localhost` mais `redis` dans notre contexte Docker compose. Votre DSN devrait donc être `redis://redis`.
-- **N'utilisez pas directement votre Singleton `Cache` dans votre service. Créez plutôt un nouveau service `CachedHotelService` qui hérite de `UnoptimizedHotelService` et surchargez les méthodes que vous voulez mettre en cache (n'hésitez pas à appeler la méthode du parent !)**.
-- Dans `index.php`, **utilisez `CachedHotelService` si le paramètre `skip_cache` n'est pas présent dans l'URL**.
-- **Notez dans votre compte rendu les différences de temps de chargement entre `http://localhost` et `http://localhost?skip_cache`** (n'oubliez pas que le cache ne sera pris en compte qu'à partir de la seconde requête !)
-> **ATTENTION** : vous devez choisir avec soin quelles données seront mises en cache. Toutes ne doivent pas l'être, car elles peuvent être changées en fonction des valeurs saisies dans les filtres. Vous ne pouvez par exemple pas mettre toute la méthode `list()` en cache. Mais si vous avez bien fait votre travail à la question 2, vous savez quelles données mettre en cache. Vous devez également avoir des clés de cache uniques, tirez parti par exemple de l'ID de l'hôtel.
+- **Testez votre `Cache` en exécutant par l'instruction ci-dessous.** Une erreur devrait apparaître.
+```php
+// index.php
+Cache::get()->getItem('any_item'); // TODO à retirer après avoir testé !
+```
+- Cette erreur se produit, car l'extension Redis n'est pas activée sur PHP.
+![](docs/assets/erreur-redis-ext.png)
+
+  **<div style="text-align:center" align="center">• COMMIT •</div>**
+
+
+11. **Activez l'extension Redis pour PHP**
+- **Créez un fichier `src/info.php` qui contiendra le code suivant :**
+```php
+<?php info();
+```
+- **Rendez-vous sur [`http://localhost/info.php`](http://localhost/info.php)** et **cherchez "*redis*"** (*CTRL+F !*).
+- Après avoir constaté l'absence de résultats, **ouvrez le fichier `docker/php.ini` et activez-y l'extension `redis.so`**
+- **Actualisez `info.php` et contrôlez que Redis est bien activé**
+- **Retournez sur [`http://localhost`](`http://localhost`) pour vous assurer que le cache fonctionne**.
+
+> [ℹ️ Indice n°10 : Comment activer une extension PHP ?](docs/indice-10.md)
+
+**<div style="text-align:center" align="center">• COMMIT •</div>**
+
+![](docs/assets/cached_api_reviews_service.png)
+12. **Créez un service `CachedApiReviewsService` qui hérite de `ApiReviewsService` et surchargez la méthode `get()` pour quelle utilise votre `Cache`.** Pour cela, basez-vous sur la documentation de [Symfony Cache](https://symfony.com/doc/current/components/cache.html).
+
+**<div style="text-align:center" align="center">• COMMIT •</div>**
+
+13. En modifiant votre `Cache`, ajoutez deux fonctionnalités :
+- **Lorsqu'on ajoute dans l'URL un paramètre `skip_cache`, alors on désactive le cache pour tout le site**
+- **Lorsqu'on ajoute dans l'URL un paramètre `clear_cache`, alors on supprime toutes les données mises en cache**
+- **Notez dans votre compte rendu les différences de temps de chargement avec et sans cache**.
+
+> [ℹ️ Indice n°11 : Comment désactiver le Cache Symfony ?](docs/indice-11.md)
+
 
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 

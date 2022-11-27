@@ -21,6 +21,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
 }
 
 class OneRequestHotelService extends AbstractHotelService {
+  # convertEntityFromArray( args: array ) : HotelEntity
   # getDB() : PDO
   # buildQuery( args: array ) : PDOStatement
 }

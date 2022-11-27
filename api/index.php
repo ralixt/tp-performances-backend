@@ -2,7 +2,7 @@
 
 use JetBrains\PhpStorm\NoReturn;
 
-$WAIT_MS = $_ENV['WAIT_MS'] ?? 500;
+$WAIT_MS = $_ENV['WAIT_MS'] ?? 50;
 
 $pdo = new PDO( "mysql:host={$_ENV['DB_HOST']};dbname={$_ENV['DB_NAME']};charset=utf8mb4", $_ENV['DB_USER'], $_ENV['DB_PASS'] );
 
@@ -34,8 +34,8 @@ if ( $hotelId == 0 )
 
 try {
   $stmt = $pdo->prepare( "SELECT
-	COUNT(meta_value) AS rating,
-	AVG(meta_value) AS count
+	COUNT(meta_value) AS count,
+	AVG(meta_value) AS rating
 FROM
 	wp_posts as post
 	INNER JOIN tp.wp_postmeta as meta ON post.ID = meta.post_id
