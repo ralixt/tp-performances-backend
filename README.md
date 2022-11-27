@@ -124,8 +124,11 @@ Les responsables marketing de l'entreprise vous demandent de ne plus charger les
 - Pour récupérer un avis d'hôtel, utilisez l'URL `http://cheap-trusted-reviews.fake/?hotel_id={hotelId}` qui vous retournera pour un hôtel donné un objet JSON comme ceci : 
 ```json
 {
-  "rating" : 4.33333333333,
-  "count" : 348
+  "hotel_id": 1,
+  "data": {
+    "rating": 117,
+    "count": 4.504273504273504
+  }
 }
 ```
 **<div style="text-align:center" align="center">• COMMIT •</div>**
