@@ -15,9 +15,9 @@ Vous allez travailler sur une application de moteur de recherche d'hôtel (un pe
 
 
 ### ⚠️ ATTENTION ⚠️
-Pour chaque question numérotée, vous devrez effectuer un commit pour que je puisse évaluer votre travail.
+Pour chaque question numérotée, vous devrez effectuer un commit pour que je puisse évaluer votre travail. Vous verrez des rappels ("COMMIT") entre les questions concernées.
 
-Vous créerez également un fichier "TP.md" qui vous servira de compte rendu où vous noterez certaines réponses aux questions et que vous versionnerez sur Git.
+Vous créerez également un fichier "TP.md" qui vous servira de compte rendu où vous noterez certaines réponses aux questions et que vous versionnerez sur Git. Les questions mentionneront explicitement quelles informations sont attendues dans ce compte rendu.
 
 L'application étant très lente au début, vous êtes autorisé à ajouter `LIMIT 10` à la fin de la requête au début de `App\Services\Hotel\UnoptimizedHotelService::list()`. **Vous devrez cependant retirer cette limite lors de vos mesures pour le compte rendu**.
 
@@ -32,92 +32,106 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 
 1. **Installez l'extension navigateur [*Page load time*](https://chrome.google.com/webstore/detail/page-load-time/fploionmjgeclbkemipmkogoaohcdbig) et affichez-la constamment dans votre navigateur (sur Chrome cliquez sur l'icône puzzle en haut à droite et cliquez sur l'icône punaise)**. ![](docs/assets/screenshot-pin-chrome-ext.png)
 
-Vous disposez d'une classe utilitaire `src/Common/Timers.php`. Elle permet d'effectuer des mesures de performances de certaines portions de code et de les visualiser dans le navigateur.
+2. Vous disposez d'une classe utilitaire `src/Common/Timers.php`. Elle permet d'effectuer des mesures de performances de certaines portions de code et de les visualiser dans le navigateur.
+- **Ouvrez le fichier `src/Common/Timers.php` et observez les commentaires de documentation pour comprendre comment fonctionne cette classe.**
+- **Utilisez cette classe pour mesurer les temps d'exécution de 3 méthodes qui vous semblent particulièrement consommatrices de ressources dans le service `src/Services/Hotel/UnoptimizedHotelService.php`**. 
+- Pour consulter les temps mesurés, ouvrez vos ChromeDevTools (Chrome, Brave, Edge, ...) et dans l'onglet "Network", cliquez sur le type "Doc". Cliquez sur la ligne
+  `localhost` (dans la colonne `name` sinon ça ne marchera pas) et dans la fenêtre qui s'affiche, consultez l'onglet "Timing", puis observez la section "Server Timing".
+- **Indiquez dans votre compte rendu le nom de ces méthodes et leur temps d'exécution sur une requête**.
 
-2. **Ouvrez le fichier `src/Common/Timers.php` et observez les commentaires de documentation pour comprendre comment fonctionne cette classe. Utilisez cette classe pour mesurer les temps d'exécution de 3 méthodes qui vous semblent particulièrement consommatrices de ressources dans le service `src/Services/Hotel/UnoptimizedHotelService.php`**. **Indiquez dans votre compte rendu le nom de ces méthodes et leur temps d'exécution sur une requête**.
-<details>
-    <summary><b>ℹ️ Indice : Comment bien choisir les fonctions à analyser</b></summary>
-Il est inutile d'analyser de fonctions de haut niveau, visez des fonctions plus imbriquées. En effet, si vous mesurez des fonctions de haut niveau, elles paraîtront plus longues, car elles incluront leurs fonctions sous-jacentes. Vous serez donc biaisé en pensant que ce sont les fonctions de haut niveau qui sont à optimiser alors que ce sont les fonctions qu'elles appellent.
-</details>
-
-> Pour consulter les temps mesurés, ouvrez vos ChromeDevTools (Chrome, Brave, Edge, ...) et dans l'onglet "Network", cliquez sur le type "Doc". Cliquez sur la ligne
-`localhost` (dans la colonne `name` sinon ça ne marchera pas) et dans la fenêtre qui s'affiche, consultez l'onglet "Timing", puis observez la section "Server Timing".
+> [ℹ️ Indice : Comment bien choisir les fonctions à analyser](/docs/question-2-indices.md)
 
 **<div style="text-align:center">COMMIT</div>**
-
-3. **Configurez l'APM NewRelic pour obtenir un monitoring plus précis**.
-- Copiez le fichier `./.env-sample` en `/.env`
-- Connectez-vous à [NewRelic](https://one.eu.newrelic.com/).
-- Dans la barre latérale noire choisissez "*Add data*" puis "*PHP*".
-- Cliquez sur "*Begin installation*" puis sélectionnez "*On host standard*"
-- Dans la section "*1 Give your application a name*" saisissez `TP performances Backend`
-- Dans la section "*2 Install the agent*" choisissez "*apt*" et dans le texte de l'item "*6. Configure your license key and application name*" copiez votre *license key* `sed -i -e "s/REPLACE_WITH_REAL_KEY/__LICENCE_KEY__/` (donc votre *license key* est entre les deux `/`) et saisissez-la dans l'entrée `NEW_RELIC_LICENSE_KEY` de votre `.env`.
-- Dans la section "*4 Connect with your logs and infrastructure*" dans l'onglet "*Linux*" copiez la valeur de `NEW_RELIC_API_KEY` et `NEW_RELIC_ACCOUNT_ID` et reportez-les dans votre `.env`.
-- **Reconstruisez le container Docker `backend` pour qu'il prenne en compte les modifications du fichier `.env` en exécutant la commande `docker compose up --build backend`**.
-- Sur la page de NewRelic, Cliquez sur "*See your data*" et actualisez la page `http://localhost` pour déclencher un envoi de données.
 
 ## Partie 3 : Optimiser la base de données
 
 ![](docs/assets/singleton-db.png)
 
-4. **Tout d'abord, réduisez le nombre de connexions `PDO` dans votre application. Commencez par ajouter un timer sur la méthode `UnoptimizedHotelService::getDB()` et notez le temps qu'elle prend dans votre compte rendu. Deux de vos services les utilisent `UnoptimizedHotelService` et `RoomService`, vous allez donc créer un Singleton <u>sans utiliser le `SingletonTrait`</u> pour votre base de données et l'utiliser dans vos services deux services. Notez dans votre compte rendu par combien vous avez amélioré le temps de chargement de la page et le nouveau temps enregistré pour la méthode `UnoptimizedHotelService::getDB()`.**
+3. **Tout d'abord, réduisez le nombre de connexions `PDO` dans votre application.**
+- Commencez par **ajouter un timer sur la méthode `UnoptimizedHotelService::getDB()` et notez le temps qu'elle prend dans votre compte rendu.** Remarquez aussi son nombre d'appels : c'est autant de connexions `PDO` qui sont ouvertes !
+- Deux de vos services les utilisent `UnoptimizedHotelService` et `RoomService`, **vous allez donc devoir créer un Singleton <u>sans utiliser le `SingletonTrait`</u> pour votre base de données et l'utiliser dans vos deux services.**
+- **Notez dans votre compte rendu par combien vous avez amélioré le temps de chargement de la page** ainsi que **le nouveau temps enregistré pour la méthode `UnoptimizedHotelService::getDB()`.**
   
 **<div style="text-align:center">COMMIT</div>**
 
-5. *Lisez jusqu'au bout avant de commencer !* **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*3 méthodes sont concernées, mais une est différente de celles trouvées à la question 2 ! Même si elle est proche*). **Implémentez ces requêtes dans le service et contrôlez que vos filtres fonctionnent avec les valeurs de l'image ci-dessous. Vous devriez avoir le même résultat. Dans votre compte rendu, saisissez le code SQL initial et son temps d'exécution grâce à vos `Timers`, puis notez vos nouvelles requêtes et leur temps d'exécution**.
+4. *Lisez jusqu'au bout avant de commencer !*
+- **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*3 méthodes sont concernées, mais une est différente de celles trouvées à la question 2 ! Même si elle est proche*). 
+- N'hésitez pas à tester vos requêtes dans PHPMyAdmin avant de les mettre dans votre code PHP, vous gagnerez beaucoup de temps, sachant que la page est longue à charger !
+- **Implémentez ces requêtes dans le service et contrôlez que vos filtres fonctionnent avec les valeurs de l'image contrôle (voir lien). Vous devriez avoir le même résultat après avoir saisi les mêmes valeurs de filtre :** [Contrôle des résultats de filtre 🏞](docs/assets/controle-resultats-q5.png) (retirez bien le `LIMIT 10` !).
+- **Dans votre compte rendu, saisissez le code SQL initial et son temps d'exécution grâce à vos `Timers`, puis notez vos nouvelles requêtes et leur temps d'exécution**. 
 
-<details>
-    <summary>ℹ️ <b>Indice : Comment obtenir plusieurs valeurs des tables <code>meta</code> dans la même requête ?</b></summary>
-Vous pouvez faire des <code>INNER JOIN</code> avec alias. Par exemple :
-<div class="highlight highlight-source-sql notranslate position-relative overflow-auto">
-
-<pre>
-SELECT
-    user.ID AS id,
-    user.display_name AS name,
-    latData.meta_value AS lat,
-    lngData.meta_value AS lng
-FROM
-    wp_users AS USER
-
-    -- geo lat
-    INNER JOIN tp.wp_usermeta AS latData ON latData.user_id = user.ID
-        AND latData.meta_key = 'geo_lat'
-    -- geo lng
-    INNER JOIN tp.wp_usermeta AS lngData ON lngData.user_id = user.ID
-        AND lngData.meta_key = 'geo_lng'
-</pre>
-</div>
-</details>
-
-<details>
-    <summary>ℹ️ <b>Indice : Comment gérer l'écriture des <code>WHERE</code> en fonction des conditions de <code>$args</code> ?</b></summary>
-Vous pouvez écrire votre requête SQL dans une variable <code>$query</code> jusqu'aux instructions <code>WHERE</code>. Créez ensuite un tableau <code>$whereClauses = []</code>, qui contiendra vos conditions. Ensuite, dans vos blocs <code>if</code>, si une entrée de <code>$arg</code> vous indique qu'il faut ajouter une condition, ajoutez votre instruction SQL dans votre tableau. Ensuite, si votre tableau a au moins une entrée, faites <code>$query .= implode(' AND ', $whereClauses );</code>
-</details>
-
-Contrôle des résultats de filtre
-![](docs/assets/controle-resultats-q5.png)
+> - [ℹ️ Indice : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](/docs/question-5-indices.md)
+> - [ℹ️ Indice : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](/docs/question-5-indices.md)
 
 **<div style="text-align:center">COMMIT</div>**
 
-6. **Inspectez la structure des tables de la base de données. Outre le fait que les types soient horribles, il n'y a surtout aucun index. Maintenant que vous avez ajouté des conditions SQL, vous devriez savoir sur quelles colonnes ajouter des indexes pour améliorer les performances. Notez dans votre compte rendu les colonnes que vous avez choisies et ainsi que le temps de chargement avant/après l'ajout de vos indexes.** 
+5. En analysant le code et en vous aidant des `Timers` :
+- **Trouvez quelle méthode de `UnoptimizedHotelService` est appelé un grand nombre de fois (10x par hôtel affiché !).**
+- **Réécrivez-la en mêlant SQL et PHP pour diviser le nombre total de requêtes SQL par 3** (*vous devrez peut-être supprimer une méthode*).
+- **Notez dans votre compte rendu le nombre de requêtes SQL avant et après votre modification, ainsi que les différences de temps de chargement**.
 
 **<div style="text-align:center">COMMIT</div>**
 
-7. **Si vous avez laissé vos timers de la question 2., vous devriez savoir quelles sont les 3 grosses méthodes qui sont consommatrices de ressources. Implémentez un système de cache pour réduire l'occurrence de ces calculs. Notez dans votre compte rendu l'amélioration du temps de la requête**.
+6. En exploitant le code SQL et PHP que vous avez écrit à la question 4, **créez un nouveau service `OneRequestHotelService` qui sera en mesure de requêter les hôtels avec les filtres en <u>1 seule requête SQL</u>**.
+
+> - [ℹ️ Indice : Utiliser des sous-requêtes dans les `INNER JOIN`](/docs/question-6-indice.md)
+> - [ℹ️ Indice : Calculer une distance entre deux points GPS en SQL](/docs/question-6-indice.md)
+
+**<div style="text-align:center">COMMIT</div>**
+
+7. **Inspectez la structure des tables de la base de données.** Outre le fait que les types soient horribles, il n'y a surtout aucun index. Maintenant que vous avez ajouté des conditions SQL, vous devriez savoir sur quelles colonnes ajouter des indexes pour améliorer les performances. 
+- **Notez dans votre compte rendu les colonnes que vous avez choisies pour ajouter les indexes**
+- **Mesurez le temps de chargement de la page avant d'ajouter vos indexes**
+- **Écrivez dans votre compte rendu la requête SQL pour ajouter vos indexes** (*Lorsque vous reprendrez le TP sur un autre poste vous serez bien content de pouvoir CTRL+C CTRL+V la création des indexes*)
+- **Mesurez et consignez le nouveau temps de chargement après exécution de la requête d'ajout des indexes**
+
+**<div style="text-align:center">COMMIT</div>**
+
+8. *Le moment que vous attendiez tous* :
+- En vous basant sur la structure des classes `HotelEntity` et `RoomEntity`, **créez deux nouvelles tables (`hotels` et `rooms`) en base données dont la structure est optimisée pour réduire le nombre de requêtes nécessaires à l'affichage des données. Portez une attention particulière aux types des données et n'oubliez pas d'ajouter les indexes.**
+- **Écrivez dans votre compte rendu la requête SQL de création des tables.**
+- **Remplissez les tables à partir des données obtenues par la grosse requête SQL que vous avez écrite dans la question précédente et notez dans votre compte rendu la requête SQL utilisée**.
+- **Écrivez un nouveau service `ReworkedHotelService`** 
+- **Comparez et notez dans votre compte rendu les différences de temps de chargement entre ces deux services**
+
+> [ℹ️ Indice : Comment générer la requête SQL de création d'une table ?](docs/question-8-indice.md)
+
+**<div style="text-align:center">COMMIT</div>**
+
+## Partie 4 : Mise en cache
+
+Les responsables marketing de l'entreprise vous demandent de ne plus charger les avis des hôtels depuis votre base de données actuelle. Ils souhaitent utiliser un service tiers de d'avis (comme *Avis vérifiés* ou *Trustpilot*) afin de mettre les internautes plus en confiance. Problème, ce service est gratuit et les serveurs sont de piètre qualité et lents à répondre, mais vous n'avez pas d'autre choix que d'utiliser ce service sur lequel **vous n'avez aucun contrôle sur le code**.
+
+9. **Créez un service `App\Services\Reviews\APIReviewsService` en vous basant sur le schéma UML ci-dessus. Au sein de ce dernier, vous effectuerez des requêtes HTTP depuis PHP pour charger les avis de vos hôtels via l'API mise à disposition par le service *CheapTrustedReviews*. Vous utiliserez ensuite ce service dans votre service d'hôtel. Notez dans votre compte rendu les différences de temps de chargement qu'entraînent l'utilisation de cette API.**
+- Bien évidemment, *CheapTrustedReviews* n'existe pas IRL (du moins je l'espère), mais vous pouvez y accédez <u>depuis l'intérieur d'un container Docker du TP</u> à l'url `http://cheap-trusted-reviews.fake/`.
+- Pour récupérer un avis d'hôtel, utilisez l'URL `http://cheap-trusted-reviews.fake/?hotel_id={hotelId}` qui vous retournera pour un hôtel donné un objet JSON comme ceci : 
+```json
+{
+  "rating" : 4.33333333333,
+  "count" : 348
+}
+```
+**<div style="text-align:center">COMMIT</div>**
+
+10. Si vous avez laissé vos timers de la question 2., vous devriez savoir quelles sont les 3 grosses méthodes qui sont consommatrices de ressources. **Implémentez un système de cache pour réduire l'occurrence de ces calculs. Notez dans votre compte rendu l'amélioration du temps de la requête**.
 - Installez la librairie [Symfony Cache](https://symfony.com/doc/current/components/cache.html) en suivant les instructions de la page. Pour avoir accès à Composer, utilisez le container Docker `backend` en allant dans l'onglet "*terminal*" de Docker Desktop sur la page du container. *Pro tips : utilisez la commande `bash` pour avoir un meilleur terminal (navigation au clavier, historique de commandes, couleurs, autocompletion, ...)*.
-- Créez une classe `App\Common\Cache` en suivant l'approche Singleton et en vous basant sur le schéma UML suivant : <div>![](docs/assets/cache-singleton.png)</div>La classe `TagAwareAdapterInterface` est dans le namespace `Symfony\Component\Cache\Adapter\TagAwareAdapterInterface`.
-- **Paramétrez un cache basé sur le système de fichiers en suivant les instructions de la page [Filesystem Cache Adapter](https://symfony.com/doc/current/components/cache/adapters/filesystem_adapter.html) et l'utilisation générale de la librairie [Symfony Cache](https://symfony.com/doc/current/components/cache.html). Votre cache devra être stocké dans le dossier `/tmp/app-cache/`**.
-- Utilisez maintenant votre système de cache dans votre service. **ATTENTION**, vous devez choisir avec soin quelles données seront mises en cache. Toutes ne doivent pas l'être, car elles peuvent être changées en fonction des valeurs saisies dans les filtres. Vous ne pouvez par exemple pas mettre toute la méthode `list()` en cache. Mais si vous avez bien fait votre travail à la question 2, vous savez quelles données mettre en cache. Vous devez également avoir des clés de cache uniques, tirez parti par exemple de l'ID de l'hôtel. 
+- Créez une classe `App\Common\Cache` en suivant l'approche Singleton et en vous basant sur le schéma UML ci-dessus. (*La classe `AdapterInterface` est dans le namespace `Symfony\Component\Cache\Adapter`*).
+- **Paramétrez un cache basé sur Redis. Vous trouverez la documentation nécessaire sur la page [Redis Cache Adapter](https://symfony.com/doc/current/components/cache/adapters/redis_adapter.html)**. L'hôte de la base Redis n'est pas `localhost` mais `redis` dans notre contexte Docker compose. Votre DSN devrait donc être `redis://redis`.
+- **N'utilisez pas directement votre Singleton `Cache` dans votre service. Créez plutôt un nouveau service `CachedHotelService` qui hérite de `UnoptimizedHotelService` et surchargez les méthodes que vous voulez mettre en cache (n'hésitez pas à appeler la méthode du parent !)**.
+- Dans `index.php`, **utilisez `CachedHotelService` si le paramètre `skip_cache` n'est pas présent dans l'URL**.
+- **Notez dans votre compte rendu les différences de temps de chargement entre `http://localhost` et `http://localhost?skip_cache`** (n'oubliez pas que le cache ne sera pris en compte qu'à partir de la seconde requête !)
+> **ATTENTION** : vous devez choisir avec soin quelles données seront mises en cache. Toutes ne doivent pas l'être, car elles peuvent être changées en fonction des valeurs saisies dans les filtres. Vous ne pouvez par exemple pas mettre toute la méthode `list()` en cache. Mais si vous avez bien fait votre travail à la question 2, vous savez quelles données mettre en cache. Vous devez également avoir des clés de cache uniques, tirez parti par exemple de l'ID de l'hôtel.
 
 **<div style="text-align:center">COMMIT</div>**
 
-8. **Modifiez votre système de Cache pour cette fois-ci implémentez un cache Redis. Vous trouverez la documentation nécessaire sur la page [Redis Cache Adapter](https://symfony.com/doc/current/components/cache/adapters/redis_adapter.html). Vous devriez constater une amélioration des performances de chargement comparé à la méthode basée sur les fichiers système**.
-- L'hôte de la base Redis n'est pas `localhost` mais `redis` dans notre contexte Docker compose. Votre DSN devrait donc être `redis://redis`.
+## Partie 5 : Optimisations NGINX 
 
-**<div style="text-align:center">COMMIT</div>**
+11. Paramétrez une compression GZIP pour vos transmissions client/serveur, notez le poids du fichier CSS avant compression et après
+12. Ajoutez également une compression Brotli, comparez le poids des fichiers CSS, notez le poids du fichier CSS et comparez le avec GZIP
+13. Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...)
+14. Effectuez une modification CSS et constatez que vous ne vous ne l'avez plus dans le navigateur. Ajoutez une constante de version d'application que vous ajouterez à la fin des URL d'appels de vos fichiers statiques
+15. Paramétrez un cache Proxy, comparez les temps de performance. 
 
-9. **En analysant le code et en vous aidant des `Timers`, trouvez quelle méthode de `UnoptimizedHotelService` est appelé un grand nombre de fois (10x par hôtel affiché !). Réécrivez-la en mêlant SQL et PHP pour diviser le nombre de cette requête par 10** (*vous devrez peut-être supprimer une méthode*). **Notez dans votre compte rendu les différences de temps de chargement**.
+## Partie 6 : Bonus
 
-**<div style="text-align:center">COMMIT</div>**
-
+16. Ajoutez le paramètre lazy-loading sur vos images 
