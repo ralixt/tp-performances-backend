@@ -39,7 +39,8 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
   `localhost` (dans la colonne `name` sinon ça ne marchera pas) et dans la fenêtre qui s'affiche, consultez l'onglet "Timing", puis observez la section "Server Timing".
 - **Indiquez dans votre compte rendu le nom de ces méthodes et leur temps d'exécution sur une requête**.
 
-> [ℹ️ Indice : Comment bien choisir les fonctions à analyser](/docs/question-2-indices.md)
+> - [ℹ️ Indice n°1 : Comment consulter les temps de chargement mesurés par `Timers` ?](docs/indice-1.md)
+> - [ℹ️ Indice n°2 : Comment bien choisir les fonctions à timer](docs/indice-2.md)
 
 **<div style="text-align:center">COMMIT</div>**
 
@@ -60,8 +61,8 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 - **Implémentez ces requêtes dans le service et contrôlez que vos filtres fonctionnent avec les valeurs de l'image contrôle (voir lien). Vous devriez avoir le même résultat après avoir saisi les mêmes valeurs de filtre :** [Contrôle des résultats de filtre 🏞](docs/assets/controle-resultats-q5.png) (retirez bien le `LIMIT 10` !).
 - **Dans votre compte rendu, saisissez le code SQL initial et son temps d'exécution grâce à vos `Timers`, puis notez vos nouvelles requêtes et leur temps d'exécution**. 
 
-> - [ℹ️ Indice : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](/docs/question-5-indices.md)
-> - [ℹ️ Indice : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](/docs/question-5-indices.md)
+> - [ℹ️ Indice n°3 : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](docs/indice-3.md)
+> - [ℹ️ Indice n°4 : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](docs/indice-4.md)
 
 **<div style="text-align:center">COMMIT</div>**
 
@@ -74,8 +75,10 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 
 6. En exploitant le code SQL et PHP que vous avez écrit à la question 4, **créez un nouveau service `OneRequestHotelService` qui sera en mesure de requêter les hôtels avec les filtres en <u>1 seule requête SQL</u>**.
 
-> - [ℹ️ Indice : Utiliser des sous-requêtes dans les `INNER JOIN`](/docs/question-6-indice.md)
-> - [ℹ️ Indice : Calculer une distance entre deux points GPS en SQL](/docs/question-6-indice.md)
+> - [ℹ️ Indice n°3 : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](docs/indice-3.md)
+> - [ℹ️ Indice n°4 : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](docs/indice-4.md)
+> - [ℹ️ Indice n°5 : Utiliser des sous-requêtes dans les `INNER JOIN`](/docs/indice-5.md)
+> - [ℹ️ Indice n°6 : Calculer une distance entre deux points GPS en SQL](/docs/indice-6.md)
 
 **<div style="text-align:center">COMMIT</div>**
 
@@ -94,7 +97,8 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 - **Écrivez un nouveau service `ReworkedHotelService`** 
 - **Comparez et notez dans votre compte rendu les différences de temps de chargement entre ces deux services**
 
-> [ℹ️ Indice : Comment générer la requête SQL de création d'une table ?](docs/question-8-indice.md)
+> - [ℹ️ Indice n°7 : Comment générer la requête SQL de création d'une table ?](docs/indice-7.md)
+> - [ℹ️ Indice n°8 : Comment insérer du contenu dans une table à partir du retour d'une requête ?](docs/indice-8.md)
 
 **<div style="text-align:center">COMMIT</div>**
 
