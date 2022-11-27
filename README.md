@@ -58,7 +58,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 4. *Lisez jusqu'au bout avant de commencer !*
 - **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*3 méthodes sont concernées, mais une est différente de celles trouvées à la question 2 ! Même si elle est proche*). 
 - N'hésitez pas à tester vos requêtes dans PHPMyAdmin avant de les mettre dans votre code PHP, vous gagnerez beaucoup de temps, sachant que la page est longue à charger !
-- **Implémentez ces requêtes dans le service et contrôlez que vos filtres fonctionnent avec les valeurs de l'image contrôle (voir lien). Vous devriez avoir le même résultat après avoir saisi les mêmes valeurs de filtre :** [Contrôle des résultats de filtre 🏞](docs/assets/controle-resultats-q5.png) (retirez bien le `LIMIT 10` !).
+- **Implémentez ces requêtes dans le service et contrôlez que vos filtres fonctionnent avec les valeurs de l'image contrôle (voir lien). Vous devriez avoir le même résultat après avoir saisi les mêmes valeurs de filtre :** Faites un [**🔎 Contrôle de non-régression**](docs/controle-resultats.md) (retirez bien le `LIMIT 10` !).
 - **Dans votre compte rendu, saisissez le code SQL initial et son temps d'exécution grâce à vos `Timers`, puis notez vos nouvelles requêtes et leur temps d'exécution**. 
 
 > - [ℹ️ Indice n°3 : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](docs/indice-3.md)
@@ -71,31 +71,44 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 - **Réécrivez-la en mêlant SQL et PHP pour diviser le nombre total de requêtes SQL par 3** (*vous devrez peut-être supprimer une méthode*).
 - **Notez dans votre compte rendu le nombre de requêtes SQL avant et après votre modification, ainsi que les différences de temps de chargement**.
 
+> **Contrôle** : Vous devriez passer de 2 201 à 601 intéractions BDD
+
 **<div style="text-align:center">COMMIT</div>**
 
-6. En exploitant le code SQL et PHP que vous avez écrit à la question 4, **créez un nouveau service `OneRequestHotelService` qui sera en mesure de requêter les hôtels avec les filtres en <u>1 seule requête SQL</u>**.
+![](docs/assets/one_request_service_class.png)
+
+6. En exploitant le code SQL et PHP que vous avez écrit à la question 4 :
+- **Dans PHPMyAdmin, concevez une requête SQL capable de requêter les hotels (avec support des filtres !) en <u>1 seule requête SQL</u>** 
+- **Écrivez votre requête SQL dans votre compte rendu**
+- **Créez un nouveau service `App\Services\Hotel\OneRequestHotelService` en vous basant sur le schéma UML ci-dessus qui utilisera votre superbe requête.**
+- Une fois créé, **dans votre `index.php`, réassignez la valeur de `$hotelService` avec votre nouveau service**. 
+- Faites un [**🔎 Contrôle de non-régression**](docs/controle-resultats.md)
 
 > - [ℹ️ Indice n°3 : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](docs/indice-3.md)
 > - [ℹ️ Indice n°4 : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](docs/indice-4.md)
 > - [ℹ️ Indice n°5 : Utiliser des sous-requêtes dans les `INNER JOIN`](/docs/indice-5.md)
 > - [ℹ️ Indice n°6 : Calculer une distance entre deux points GPS en SQL](/docs/indice-6.md)
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">COMMIT</div>**
 
 7. **Inspectez la structure des tables de la base de données.** Outre le fait que les types soient horribles, il n'y a surtout aucun index. Maintenant que vous avez ajouté des conditions SQL, vous devriez savoir sur quelles colonnes ajouter des indexes pour améliorer les performances. 
 - **Notez dans votre compte rendu les colonnes que vous avez choisies pour ajouter les indexes**
 - **Mesurez le temps de chargement de la page avant d'ajouter vos indexes**
 - **Écrivez dans votre compte rendu la requête SQL pour ajouter vos indexes** (*Lorsque vous reprendrez le TP sur un autre poste vous serez bien content de pouvoir CTRL+C CTRL+V la création des indexes*)
-- **Mesurez et consignez le nouveau temps de chargement après exécution de la requête d'ajout des indexes**
+- **Mesurez et consignez le nouveau temps de chargement après exécution de la requête d'ajout des indexes**.
+- Dans votre `index.php`, **rebasculez sur l'ancien service `UnoptimizedHotelService` et comparez les temps de chargement de la page entre l'ancien et le nouveau service**. *Les temps devraient être très proches ! Les indexes, lorsque bien utilisés, sont très efficaces !* 
 
 **<div style="text-align:center">COMMIT</div>**
 
+![](docs/assets/reworked_request_service_class.png)
+
 8. *Le moment que vous attendiez tous* :
-- En vous basant sur la structure des classes `HotelEntity` et `RoomEntity`, **créez deux nouvelles tables (`hotels` et `rooms`) en base données dont la structure est optimisée pour réduire le nombre de requêtes nécessaires à l'affichage des données. Portez une attention particulière aux types des données et n'oubliez pas d'ajouter les indexes.**
+- En vous basant sur la structure des classes `HotelEntity` et `RoomEntity`, **créez trois nouvelles tables (`hotels`, `rooms` et `reviews`) en base données dont la structure est optimisée pour réduire le nombre de requêtes nécessaires à l'affichage des données. Portez une attention particulière aux types des données et n'oubliez pas d'ajouter les indexes.**
 - **Écrivez dans votre compte rendu la requête SQL de création des tables.**
 - **Remplissez les tables à partir des données obtenues par la grosse requête SQL que vous avez écrite dans la question précédente et notez dans votre compte rendu la requête SQL utilisée**.
-- **Écrivez un nouveau service `ReworkedHotelService`** 
-- **Comparez et notez dans votre compte rendu les différences de temps de chargement entre ces deux services**
+- **Écrivez un nouveau service `App\Services\Hotel\ReworkedHotelService`** *exploitez le code PHP de construction de requête que vous avez fait dans `OneRequestService` !* 
+- Faites un [**🔎 Contrôle de non-régression**](docs/controle-resultats.md) (*Attention au nombre d'avis des hôtels !*)
+- **Comparez et notez dans votre compte rendu les différences de temps de chargement entre `OneRequestHotelService` et `ReworkedHotelService`.**
 
 > - [ℹ️ Indice n°7 : Comment générer la requête SQL de création d'une table ?](docs/indice-7.md)
 > - [ℹ️ Indice n°8 : Comment insérer du contenu dans une table à partir du retour d'une requête ?](docs/indice-8.md)
