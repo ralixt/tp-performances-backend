@@ -15,7 +15,7 @@ Vous allez travailler sur une application de moteur de recherche d'hôtel (un pe
 
 
 ### ⚠️ ATTENTION ⚠️
-Pour chaque question numérotée, vous devrez effectuer un commit pour que je puisse évaluer votre travail. Vous verrez des rappels ("COMMIT") entre les questions concernées.
+Pour chaque question numérotée, vous devrez effectuer un commit pour que je puisse évaluer votre travail. Vous verrez des rappels ("• COMMIT •") entre les questions concernées.
 
 Vous créerez également un fichier "TP.md" qui vous servira de compte rendu où vous noterez certaines réponses aux questions et que vous versionnerez sur Git. Les questions mentionneront explicitement quelles informations sont attendues dans ce compte rendu.
 
@@ -42,7 +42,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 > - [ℹ️ Indice n°1 : Comment consulter les temps de chargement mesurés par `Timers` ?](docs/indice-1.md)
 > - [ℹ️ Indice n°2 : Comment bien choisir les fonctions à timer](docs/indice-2.md)
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 ## Partie 3 : Optimiser la base de données
 
@@ -53,7 +53,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 - Deux de vos services les utilisent `UnoptimizedHotelService` et `RoomService`, **vous allez donc devoir créer un Singleton <u>sans utiliser le `SingletonTrait`</u> pour votre base de données et l'utiliser dans vos deux services.**
 - **Notez dans votre compte rendu par combien vous avez amélioré le temps de chargement de la page** ainsi que **le nouveau temps enregistré pour la méthode `UnoptimizedHotelService::getDB()`.**
   
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 4. *Lisez jusqu'au bout avant de commencer !*
 - **Analysez le code du `UnoptimizedHotelService` et repérez certaines portions de code qui pourraient être faite en SQL**. (*3 méthodes sont concernées, mais une est différente de celles trouvées à la question 2 ! Même si elle est proche*). 
@@ -64,7 +64,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 > - [ℹ️ Indice n°3 : Comment obtenir plusieurs valeurs des tables `meta` dans la même requête ?](docs/indice-3.md)
 > - [ℹ️ Indice n°4 : Comment gérer l'écriture des `WHERE` en fonction des conditions de `$args` ?](docs/indice-4.md)
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 5. En analysant le code et en vous aidant des `Timers` :
 - **Trouvez quelle méthode de `UnoptimizedHotelService` est appelé un grand nombre de fois (10x par hôtel affiché !).**
@@ -73,7 +73,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 
 > **Contrôle** : Vous devriez passer de 2 201 à 601 intéractions BDD
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 ![](docs/assets/one_request_service_class.png)
 
@@ -89,7 +89,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 > - [ℹ️ Indice n°5 : Utiliser des sous-requêtes dans les `INNER JOIN`](/docs/indice-5.md)
 > - [ℹ️ Indice n°6 : Calculer une distance entre deux points GPS en SQL](/docs/indice-6.md)
 
-**<div style="text-align:center" align="center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 7. **Inspectez la structure des tables de la base de données.** Outre le fait que les types soient horribles, il n'y a surtout aucun index. Maintenant que vous avez ajouté des conditions SQL, vous devriez savoir sur quelles colonnes ajouter des indexes pour améliorer les performances. 
 - **Notez dans votre compte rendu les colonnes que vous avez choisies pour ajouter les indexes**
@@ -98,7 +98,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 - **Mesurez et consignez le nouveau temps de chargement après exécution de la requête d'ajout des indexes**.
 - Dans votre `index.php`, **rebasculez sur l'ancien service `UnoptimizedHotelService` et comparez les temps de chargement de la page entre l'ancien et le nouveau service**. *Les temps devraient être très proches ! Les indexes, lorsque bien utilisés, sont très efficaces !* 
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 ![](docs/assets/reworked_request_service_class.png)
 
@@ -113,7 +113,7 @@ L'application étant très lente au début, vous êtes autorisé à ajouter `LIM
 > - [ℹ️ Indice n°7 : Comment générer la requête SQL de création d'une table ?](docs/indice-7.md)
 > - [ℹ️ Indice n°8 : Comment insérer du contenu dans une table à partir du retour d'une requête ?](docs/indice-8.md)
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 ## Partie 4 : Mise en cache
 
@@ -128,7 +128,7 @@ Les responsables marketing de l'entreprise vous demandent de ne plus charger les
   "count" : 348
 }
 ```
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 10. Si vous avez laissé vos timers de la question 2., vous devriez savoir quelles sont les 3 grosses méthodes qui sont consommatrices de ressources. **Implémentez un système de cache pour réduire l'occurrence de ces calculs. Notez dans votre compte rendu l'amélioration du temps de la requête**.
 - Installez la librairie [Symfony Cache](https://symfony.com/doc/current/components/cache.html) en suivant les instructions de la page. Pour avoir accès à Composer, utilisez le container Docker `backend` en allant dans l'onglet "*terminal*" de Docker Desktop sur la page du container. *Pro tips : utilisez la commande `bash` pour avoir un meilleur terminal (navigation au clavier, historique de commandes, couleurs, autocompletion, ...)*.
@@ -139,7 +139,7 @@ Les responsables marketing de l'entreprise vous demandent de ne plus charger les
 - **Notez dans votre compte rendu les différences de temps de chargement entre `http://localhost` et `http://localhost?skip_cache`** (n'oubliez pas que le cache ne sera pris en compte qu'à partir de la seconde requête !)
 > **ATTENTION** : vous devez choisir avec soin quelles données seront mises en cache. Toutes ne doivent pas l'être, car elles peuvent être changées en fonction des valeurs saisies dans les filtres. Vous ne pouvez par exemple pas mettre toute la méthode `list()` en cache. Mais si vous avez bien fait votre travail à la question 2, vous savez quelles données mettre en cache. Vous devez également avoir des clés de cache uniques, tirez parti par exemple de l'ID de l'hôtel.
 
-**<div style="text-align:center">COMMIT</div>**
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
 ## Partie 5 : Optimisations NGINX 
 
