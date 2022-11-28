@@ -193,9 +193,8 @@ Lorsque vous ouvrez le panneau *network* de vos ChromeDevTools, vous remarquerez
 
 14. **Paramétrez une compression GZIP pour vos transmissions client/serveur. Dans votre compte rendu, vous noterez le poids du `lodash.js` avant et après activation de la compression GZIP**
     **<div style="text-align:center" align="center">• COMMIT •</div>**
-15. **Ajoutez maintenant une compression Brotli. Dans votre compte rendu, comparez le poids du fichier `lodash.js` en GZIP puis en Brotli.**
+15. **Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...) qui expirera au bout d'un an**
     **<div style="text-align:center" align="center">• COMMIT •</div>**
-16. Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...)
 17. Effectuez une modification CSS et constatez que vous ne vous ne l'avez plus dans le navigateur. Ajoutez une constante de version d'application que vous ajouterez à la fin des URL d'appels de vos fichiers statiques
 18. Paramétrez un cache Proxy, comparez les temps de performance. 
 
