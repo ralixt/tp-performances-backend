@@ -1,5 +1,7 @@
 # TP Optimisation des Performances Backend
 
+[Lien vers le readme originel](https://github.com/arthur-eudeline-cours/tp-performances-backend).
+
 Compétences mobilisées :
 - Optimisations SQL (nombre de requêtes, structuration des tables, ...)
 - Mise en place de systèmes de caches variés
@@ -17,7 +19,7 @@ Vous allez travailler sur une application de moteur de recherche d'hôtel (un pe
 ### ⚠️ ATTENTION ⚠️
 Pour chaque question numérotée, vous devrez effectuer un commit pour que je puisse évaluer votre travail. Vous verrez des rappels ("• COMMIT •") entre les questions concernées.
 
-Vous créerez également un fichier "TP.md" qui vous servira de compte rendu où vous noterez certaines réponses aux questions et que vous versionnerez sur Git. Les questions mentionneront explicitement quelles informations sont attendues dans ce compte rendu.
+Vous créerez également un fichier "COMPTE-RENDU.md" qui vous servira de compte rendu où vous noterez certaines réponses aux questions et que vous versionnerez sur Git. Les questions mentionneront explicitement quelles informations sont attendues dans ce compte rendu. Vous disposez d'un fichier d'exemple que vous pouvez utiliser.
 
 L'application étant très lente au début, vous êtes autorisé à ajouter `LIMIT 10` à la fin de la requête au début de `App\Services\Hotel\UnoptimizedHotelService::list()`. **Vous devrez cependant retirer cette limite lors de vos mesures pour le compte rendu**.
 
@@ -191,12 +193,19 @@ Lorsque vous ouvrez le panneau *network* de vos ChromeDevTools, vous remarquerez
 - Pour les questions suivantes, vous devrez utiliser les fichiers `.conf` situés dans le dossier `docker/nginx`.
 - Pour chaque opération effectuée sur les fichiers `docker/nginx/*.conf`, vous devrez **recharger NGINX pour que les changements soient pris en compte**. Pour cela, connectez-vous au terminal container Docker `backend` et utilisez la commande `nginx -s reload`.
 
-14. **Paramétrez une compression GZIP pour vos transmissions client/serveur. Dans votre compte rendu, vous noterez le poids du `lodash.js` avant et après activation de la compression GZIP**
-    
+14. **Paramétrez une compression GZIP pour vos transmissions client/serveur. Dans votre compte rendu, vous :**
+- **noterez le poids total des fichiers JavaScript avant et après activation de la compression**
+- **noterez le poids du fichier `lodash.js` avant et après activation de la compression GZIP**
+
+> - [ℹ️ Indice n°12 : Comment voir si une réponse est compressée ?](docs/indice-12.md)
+> - [ℹ️ Indice n°14 : Comment voir le poids total d'un type de fichiers ?](docs/indice-14.md)
+
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 
 15. **Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...) qui expirera au bout d'un an**
-    
+
+> [ℹ️ Indice n°12 : Comment voir si une réponse est mise en cache par le navigateur ?](docs/indice-12.md)
+
 **<div style="text-align:center" align="center">• COMMIT •</div>**
 
 16. **Dans le fichier `src/assets/styles/main.css`, ajoutez les lignes suivantes pour modifier l'aspect des boutons :** 
@@ -216,10 +225,19 @@ Lorsque vous ouvrez le panneau *network* de vos ChromeDevTools, vous remarquerez
   font-weight: bold;
 }
 ```
+> [ℹ️ Indice n°13 : Comment purger le cache navigateur ?](docs/indice-13.md)
+
+**<div style="text-align:center" align="center">• COMMIT •</div>**
+
 17. Avec la configuration serveur que nous avons (NGINX reçoit les requêtes, les transmet à un moteur PHP qui lui retourne du HTML), nous pouvons utiliser un cache proxy. C'est un des caches les plus puissants puisqu'il va pouvoir mettre en cache le HTML généré par PHP pour une requête. Si la page est en cache NGINX, on n'exécutera pas du tout PHP ! 
-- **Implémentez un cache Proxy sur NGINX**
-- Basez-vous sur le [tutoriel suivant](https://www.linuxbabe.com/nginx/setup-nginx-fastcgi-cache)
+- **Implémentez un cache Proxy sur NGINX** en vous basant sur le [tutoriel suivant](https://www.linuxbabe.com/nginx/setup-nginx-fastcgi-cache)
+  - Assurez-vous de ne mettre en cache que les requêtes en `GET`
+  - Autorisez la mise en cache des URL avec paramètres d'URL 
+  - Ajoutez un header `X-FastCGI-Cache` qui indiquera `MISS` ou `HIT` en fonction de si le cache a été utilisé ou non
+  - Ajoutez une URL `/purge/` qui, lorsqu'elle sera effectuée, videra le cache FastCGI
 - **Notez les différences de temps de chargement avant et après mise en place du cache.** *Elles sont infimes parce que nous avons optimisé le plus possible le Back-End ! Les prochaines optimisations à faire seront du côté Front-End.*
 - Coupez le container de base de données et tentez de recharger votre page. **Dans votre compte rendu répondez aux questions suivantes :**
   - **Que se passe-t-il ?**
   - **Pourquoi ?** (*la réponse est dans le tutoriel, je ne la sors pas de mon chapeau*)
+
+> [ℹ️ Indice n°12 : Comment voir si une réponse mise en cache FastCGI ?](docs/indice-12.md)
