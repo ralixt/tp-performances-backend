@@ -192,12 +192,34 @@ Lorsque vous ouvrez le panneau *network* de vos ChromeDevTools, vous remarquerez
 - Pour chaque opération effectuée sur les fichiers `docker/nginx/*.conf`, vous devrez **recharger NGINX pour que les changements soient pris en compte**. Pour cela, connectez-vous au terminal container Docker `backend` et utilisez la commande `nginx -s reload`.
 
 14. **Paramétrez une compression GZIP pour vos transmissions client/serveur. Dans votre compte rendu, vous noterez le poids du `lodash.js` avant et après activation de la compression GZIP**
-    **<div style="text-align:center" align="center">• COMMIT •</div>**
+    
+**<div style="text-align:center" align="center">• COMMIT •</div>**
+
 15. **Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...) qui expirera au bout d'un an**
-    **<div style="text-align:center" align="center">• COMMIT •</div>**
-17. Effectuez une modification CSS et constatez que vous ne vous ne l'avez plus dans le navigateur. Ajoutez une constante de version d'application que vous ajouterez à la fin des URL d'appels de vos fichiers statiques
-18. Paramétrez un cache Proxy, comparez les temps de performance. 
+    
+**<div style="text-align:center" align="center">• COMMIT •</div>**
 
-## Partie 6 : Bonus
-
-19. Ajoutez le paramètre lazy-loading sur vos images 
+16. **Dans le fichier `src/assets/styles/main.css`, ajoutez les lignes suivantes pour modifier l'aspect des boutons :** 
+```css
+.btn {
+  text-transform: uppercase;
+}
+```
+- Constatez, **après un refresh simple (donc <u>sans vider le cache navigateur</u>), que vos modifications n'ont pas été prises en compte**. Vous pouvez aussi le voir dans le panneau *network* où le fichier est marqué `(disk cache)` dans la colonne *Size*.
+- Dans `index.php`, **ajoutez une constante `VERSION` avec la valeur `1.0` et ajoutez cette valeur à la fin de chaque URL des balises `<script>` ou `<link>` du fichier `src/Views/Fragments/header.php` sous le paramètre `?v=`.**
+- **Rafraîchissez localhost** et constatez que les boutons sont maintenant écrits en majuscules.
+- **Ajoutez deux propriétés CSS à bouton** et constatez que les changements ne sont apparents qu'après avoir modifié la valeur de `VERSION`.
+```css
+.btn {
+  /* [...] */
+  font-size: 0.85em !important;
+  font-weight: bold;
+}
+```
+17. Avec la configuration serveur que nous avons (NGINX reçoit les requêtes, les transmet à un moteur PHP qui lui retourne du HTML), nous pouvons utiliser un cache proxy. C'est un des caches les plus puissants puisqu'il va pouvoir mettre en cache le HTML généré par PHP pour une requête. Si la page est en cache NGINX, on n'exécutera pas du tout PHP ! 
+- **Implémentez un cache Proxy sur NGINX**
+- Basez-vous sur le [tutoriel suivant](https://www.linuxbabe.com/nginx/setup-nginx-fastcgi-cache)
+- **Notez les différences de temps de chargement avant et après mise en place du cache.** *Elles sont infimes parce que nous avons optimisé le plus possible le Back-End ! Les prochaines optimisations à faire seront du côté Front-End.*
+- Coupez le container de base de données et tentez de recharger votre page. **Dans votre compte rendu répondez aux questions suivantes :**
+  - **Que se passe-t-il ?**
+  - **Pourquoi ?** (*la réponse est dans le tutoriel, je ne la sors pas de mon chapeau*)
