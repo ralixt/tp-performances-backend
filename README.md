@@ -187,12 +187,18 @@ Cache::get()->getItem('any_item'); // TODO à retirer après avoir testé !
 
 ## Partie 5 : Optimisations NGINX 
 
-11. Paramétrez une compression GZIP pour vos transmissions client/serveur, notez le poids du fichier CSS avant compression et après
-12. Ajoutez également une compression Brotli, comparez le poids des fichiers CSS, notez le poids du fichier CSS et comparez le avec GZIP
-13. Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...)
-14. Effectuez une modification CSS et constatez que vous ne vous ne l'avez plus dans le navigateur. Ajoutez une constante de version d'application que vous ajouterez à la fin des URL d'appels de vos fichiers statiques
-15. Paramétrez un cache Proxy, comparez les temps de performance. 
+Lorsque vous ouvrez le panneau *network* de vos ChromeDevTools, vous remarquerez que le poids total de la page est d'environ 26Mo. C'est parce qu'aucune compression n'est activée sur le serveur ! Par exemple, si vous cochez *JS*, vous verrez que le fichier le plus lourd est `lodash.js` avec 544Ko (1/2 Mo tout de même) !
+- Pour les questions suivantes, vous devrez utiliser les fichiers `.conf` situés dans le dossier `docker/nginx`.
+- Pour chaque opération effectuée sur les fichiers `docker/nginx/*.conf`, vous devrez **recharger NGINX pour que les changements soient pris en compte**. Pour cela, connectez-vous au terminal container Docker `backend` et utilisez la commande `nginx -s reload`.
+
+14. **Paramétrez une compression GZIP pour vos transmissions client/serveur. Dans votre compte rendu, vous noterez le poids du `lodash.js` avant et après activation de la compression GZIP**
+    **<div style="text-align:center" align="center">• COMMIT •</div>**
+15. **Ajoutez maintenant une compression Brotli. Dans votre compte rendu, comparez le poids du fichier `lodash.js` en GZIP puis en Brotli.**
+    **<div style="text-align:center" align="center">• COMMIT •</div>**
+16. Paramétrez un cache HTTP pour les ressources statiques (images, CSS, JS, ...)
+17. Effectuez une modification CSS et constatez que vous ne vous ne l'avez plus dans le navigateur. Ajoutez une constante de version d'application que vous ajouterez à la fin des URL d'appels de vos fichiers statiques
+18. Paramétrez un cache Proxy, comparez les temps de performance. 
 
 ## Partie 6 : Bonus
 
-16. Ajoutez le paramètre lazy-loading sur vos images 
+19. Ajoutez le paramètre lazy-loading sur vos images 
