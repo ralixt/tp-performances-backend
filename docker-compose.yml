@@ -1,19 +1,6 @@
 services:
   backend:
-    build:
-      context: ./
-      args:
-        NEW_RELIC_API_KEY: $NEW_RELIC_API_KEY
-        NEW_RELIC_ACCOUNT_ID: $NEW_RELIC_ACCOUNT_ID
-        NEW_RELIC_REGION: $NEW_RELIC_REGION
-        NEW_RELIC_APP_NAME: $NEW_RELIC_APP_NAME
-        NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
-    environment:
-      NEW_RELIC_API_KEY: $NEW_RELIC_API_KEY
-      NEW_RELIC_ACCOUNT_ID: $NEW_RELIC_ACCOUNT_ID
-      NEW_RELIC_REGION: $NEW_RELIC_REGION
-      NEW_RELIC_APP_NAME: $NEW_RELIC_APP_NAME
-      NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
+    image: arthureudeline/php-nginx
     volumes:
       - ./src:/var/www/tp-performances
       - ./docker/nginx/localhost.conf:/etc/nginx/sites-available/tp-performances
@@ -25,7 +12,7 @@ services:
       - db
 
   db:
-    image: "mariadb:latest"
+    image: mariadb:latest
     ports:
       - 3306:3306
     volumes:
@@ -58,8 +45,7 @@ services:
 
   reviews-api:
     hostname: cheap-trusted-reviews.fake
-    build:
-      context: api/
+    image: arthureudeline/cheap-trusted-reviews-api-server
     ports:
       - 8888:80
     environment:
