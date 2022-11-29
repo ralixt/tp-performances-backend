@@ -50,17 +50,19 @@ class UnoptimizedHotelService extends AbstractHotelService {
    * @return string|null
    */
   protected function getMeta ( int $userId, string $key ) : ?string {
+      $id = $this -> timer ->startTimer("getMeta");
     $db = $this->getDB();
-    $stmt = $db->prepare( "SELECT * FROM wp_usermeta" );
-    $stmt->execute();
+    $stmt = $db->prepare( "SELECT meta_value FROM wp_usermeta WHERE user_id=:UserId AND meta_key=:metaKey ;" );
+    $stmt->execute([
+        "UserId" => $userId,
+        "metaKey" => $key
+    ]);
     
     $result = $stmt->fetchAll( PDO::FETCH_ASSOC );
-    $output = null;
-    foreach ( $result as $row ) {
-      if ( $row['user_id'] === $userId && $row['meta_key'] === $key )
-        $output = $row['meta_value'];
-    }
-    
+    $output = $result[0]['meta_value'];
+
+
+    $this ->timer ->endTimer("getMeta", $id);
     return $output;
   }
   
@@ -74,7 +76,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
    * @noinspection PhpUnnecessaryLocalVariableInspection
    */
   protected function getMetas ( HotelEntity $hotel ) : array {
-      $id = $this -> timer ->startTimer("loadMetas");
+      $id = $this -> timer ->startTimer("getMetas");
     $metaDatas = [
       'address' => [
         'address_1' => $this->getMeta( $hotel->getId(), 'address_1' ),
@@ -89,7 +91,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
       'phone' =>  $this->getMeta( $hotel->getId(), 'phone' ),
     ];
 
-      $this ->timer ->endTimer("loadMetas", $id);
+      $this ->timer ->endTimer("getMetas", $id);
 
     return $metaDatas;
   }
@@ -104,23 +106,21 @@ class UnoptimizedHotelService extends AbstractHotelService {
    * @noinspection PhpUnnecessaryLocalVariableInspection
    */
   protected function getReviews ( HotelEntity $hotel ) : array {
-      $id = $this -> timer ->startTimer("loadReviews");
+      $id = $this -> timer ->startTimer("getReviews");
     // Récupère tous les avis d'un hotel
-    $stmt = $this->getDB()->prepare( "SELECT * FROM wp_posts, wp_postmeta WHERE wp_posts.post_author = :hotelId AND wp_posts.ID = wp_postmeta.post_id AND meta_key = 'rating' AND post_type = 'review'" );
+    $stmt = $this->getDB()->prepare( "SELECT ROUND(AVG(meta_value)) AS rating, COUNT(meta_value) AS count FROM wp_posts, wp_postmeta WHERE wp_posts.post_author = :hotelId AND wp_posts.ID = wp_postmeta.post_id AND meta_key = 'rating' AND post_type = 'review';");
     $stmt->execute( [ 'hotelId' => $hotel->getId() ] );
     $reviews = $stmt->fetchAll( PDO::FETCH_ASSOC );
     
     // Sur les lignes, ne garde que la note de l'avis
-    $reviews = array_map( function ( $review ) {
-      return intval( $review['meta_value'] );
-    }, $reviews );
+
     
     $output = [
-      'rating' => round( array_sum( $reviews ) / count( $reviews ) ),
-      'count' => count( $reviews ),
+      'rating' => $reviews[0]['rating'],
+      'count' => $reviews[0]['count']
     ];
 
-      $this ->timer ->endTimer("loadReviews", $id);
+      $this ->timer ->endTimer("getReviews", $id);
     return $output;
   }
   
@@ -144,7 +144,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
    * @return RoomEntity
    */
   protected function getCheapestRoom ( HotelEntity $hotel, array $args = [] ) : RoomEntity {
-      $id = $this -> timer ->startTimer("loadCheapestRoom");
+      $id = $this -> timer ->startTimer("getCheapestRoom");
     // On charge toutes les chambres de l'hôtel
     $stmt = $this->getDB()->prepare( "SELECT * FROM wp_posts WHERE post_author = :hotelId AND post_type = 'room'" );
     $stmt->execute( [ 'hotelId' => $hotel->getId() ] );
@@ -203,7 +203,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
         $cheapestRoom = $room;
     endforeach;
 
-      $this ->timer ->endTimer("loadCheapestRoom",$id);
+      $this ->timer ->endTimer("getCheapestRoom",$id);
     
     return $cheapestRoom;
   }

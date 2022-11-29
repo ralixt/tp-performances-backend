@@ -2,19 +2,20 @@ Vous pouvez utiliser ce [GSheets](https://docs.google.com/spreadsheets/d/13Hw27U
 
 ## Question 2 : Utilisation Server Timing API
 
-**Temps de chargement initial de la page** : TEMPS
+**Temps de chargement initial de la page** : 30.3 s
 
 **Choix des méthodes à analyser** :
 
-- `getMetas`: 15.81 s
-- `getReviews`: 4.42 s
-- `getCheapestRoom`: 8.72 s
+- `getMeta`: 4.02 s
+- `getReviews`: 8.82 s
+- `getMetas`: 4.27 s
+- `getCheapestRoom` : 15.15 s
 
 
 
 ## Question 3 : Réduction du nombre de connexions PDO
 
-**Temps de chargement de la page** : TEMPS
+**Temps de chargement de la page** : 29.31 s
 
 **Temps consommé par `getDB()`** 
 
@@ -27,49 +28,49 @@ Vous pouvez utiliser ce [GSheets](https://docs.google.com/spreadsheets/d/13Hw27U
 
 **Temps de chargement globaux** 
 
-- **Avant** TEMPS
+- **Avant** : 28.8 s
 
 - **Après** TEMPS
 
 
-#### Amélioration de la méthode `METHOD` et donc de la méthode `METHOD` :
+#### Amélioration de la méthode `getMeta` et donc de la méthode `getMeta` :
 
-- **Avant** TEMPS
+- **Avant** : 3.18 s
 
 ```sql
--- REQ SQL DE BASE
+SELECT * FROM wp_usermeta;
 ```
 
-- **Après** TEMPS
+- **Après** : 1.52 s
 
 ```sql
--- NOUVELLE REQ SQL
-```
-
-
-
-#### Amélioration de la méthode `METHOD` :
-
-- **Avant** TEMPS
-
-```sql
--- REQ SQL DE BASE
-```
-
-- **Après** TEMPS
-
-```sql
--- NOUVELLE REQ SQL
+SELECT meta_value FROM wp_usermeta WHERE user_id=:UserId AND meta_key=:metaKey ;
 ```
 
 
 
-#### Amélioration de la méthode `METHOD` :
+#### Amélioration de la méthode `getReviews` :
 
-- **Avant** TEMPS
+- **Avant** : 8.45 s
 
 ```sql
--- REQ SQL DE BASE
+SELECT * FROM wp_posts, wp_postmeta WHERE wp_posts.post_author = :hotelId AND wp_posts.ID = wp_postmeta.post_id AND meta_key = 'rating' AND post_type = 'review';
+```
+
+- **Après** : 6.53 s
+
+```sql
+SELECT ROUND(AVG(meta_value)) AS rating, COUNT(meta_value) AS count FROM wp_posts, wp_postmeta WHERE wp_posts.post_author = :hotelId AND wp_posts.ID = wp_postmeta.post_id AND meta_key = 'rating' AND post_type = 'review';
+```
+
+
+
+#### Amélioration de la méthode `getCheapestRoom` :
+
+- **Avant** : 15.66 s
+
+```sql
+SELECT * FROM wp_posts WHERE post_author = :hotelId AND post_type = 'room'
 ```
 
 - **Après** TEMPS
