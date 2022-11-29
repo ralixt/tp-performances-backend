@@ -18,9 +18,9 @@ Vous pouvez utiliser ce [GSheets](https://docs.google.com/spreadsheets/d/13Hw27U
 
 **Temps consommé par `getDB()`** 
 
-- **Avant** TEMPS
+- **Avant** : 1.32 s
 
-- **Après** TEMPS
+- **Après** : 4.16 ms
 
 
 ## Question 4 : Délégation des opérations de filtrage à la base de données

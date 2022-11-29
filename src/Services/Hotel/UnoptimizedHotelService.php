@@ -10,6 +10,7 @@ use App\Entities\RoomEntity;
 use App\Services\Room\RoomService;
 use Exception;
 use PDO;
+use App\Entities\PDOSingleton;
 
 /**
  * Une classe utilitaire pour récupérer les données des magasins stockés en base de données
@@ -33,7 +34,9 @@ class UnoptimizedHotelService extends AbstractHotelService {
    * @noinspection PhpUnnecessaryLocalVariableInspection
    */
   protected function getDB () : PDO {
-    $pdo = new PDO( "mysql:host=db;dbname=tp;charset=utf8mb4", "root", "root" );
+      $id = $this -> timer ->startTimer("getDB");
+    $pdo = PDOSingleton::get();
+      $this ->timer ->endTimer("getDB", $id);
     return $pdo;
   }
   
