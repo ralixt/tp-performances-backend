@@ -2,10 +2,10 @@ SELECT
 	posts.ID AS postID,
     user.display_name AS hotelName,
     posts.post_title AS roomName,
+    surface.meta_value AS surface,
     price.meta_value AS price,
     bedrooms_count.meta_value AS bedrooms_count,
     bathrooms_count.meta_value AS bathrooms_count,
-    surface.meta_value AS surface,
     type.meta_value AS type,
     coverImage.meta_value AS coverImage,
     posts.guid AS guid
