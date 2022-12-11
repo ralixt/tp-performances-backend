@@ -33,7 +33,7 @@ Vous pouvez utiliser ce [GSheets](https://docs.google.com/spreadsheets/d/13Hw27U
 - **Après** TEMPS
 
 
-#### Amélioration de la méthode `getMeta` et donc de la méthode `getMeta` :
+#### Amélioration de la méthode `getMeta` et donc de la méthode `getMetas` :
 
 - **Avant** : 3.18 s
 
