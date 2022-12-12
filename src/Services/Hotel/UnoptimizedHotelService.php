@@ -162,7 +162,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
     $filteredRooms = [];
     
     foreach ( $rooms as $room ) {
-      if ( isset( $args['surface']['min'] ) && $room->getSurface() < $args['surface']['min'] )
+      if ( isset( $args['surface']['min'] ))
         continue;
       
       if ( isset( $args['surface']['max'] ) && $room->getSurface() > $args['surface']['max'] )
