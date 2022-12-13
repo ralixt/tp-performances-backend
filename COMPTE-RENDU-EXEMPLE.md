@@ -77,7 +77,9 @@ SELECT * FROM wp_posts WHERE post_author = :hotelId AND post_type = 'room'
 
 ```sql
 SELECT
+
  posts.ID AS postID,
+ posts.post_author AS postAuthor,
  USER.display_name AS hotelName,
  posts.post_title AS roomName,
  CAST(surface.meta_value AS INT) AS surface,
@@ -91,12 +93,13 @@ SELECT
 
  latData.meta_value AS lat,
  lngData.meta_value AS lng,
+
  111.111
   * DEGREES(ACOS(LEAST(1.0, COS(RADIANS( latData.meta_value ))
-                             * COS(RADIANS( 46.9903264 ))
-                             * COS(RADIANS( lngData.meta_value - 3.163412 ))
+                             * COS(RADIANS( :userLat ))
+                             * COS(RADIANS( lngData.meta_value - :userLng ))
   + SIN(RADIANS( latData.meta_value ))
-                             * SIN(RADIANS( :userLat  ))))) AS distanceKM
+                             * SIN(RADIANS( :userLat ))))) AS distanceKM
 
 FROM
  wp_posts AS posts
