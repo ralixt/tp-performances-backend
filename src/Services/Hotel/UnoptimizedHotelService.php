@@ -217,7 +217,7 @@ ON
     
 INNER JOIN wp_usermeta AS latData ON latData.user_id = user.ID AND latData.meta_key = 'geo_lat'
 
-INNER JOIN wp_usermeta AS lngData ON lngData.user_id = user.ID AND lngData.meta_key = 'geo_lng'";
+INNER JOIN wp_usermeta AS lngData ON lngData.user_id = user.ID AND lngData.meta_key = 'geo_lng'" ;
 
 
 
