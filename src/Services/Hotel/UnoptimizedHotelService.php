@@ -292,7 +292,6 @@ class UnoptimizedHotelService extends AbstractHotelService {
             if ( intval( $room->getPrice() ) < intval( $cheapestRoom->getPrice() ) )
                 $cheapestRoom = $room;
         endforeach;
-
         
 
         $this ->timer ->endTimer("getCheapestRoom",$id);
