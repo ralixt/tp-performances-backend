@@ -239,6 +239,8 @@ class UnoptimizedHotelService extends AbstractHotelService {
             $whereClauses[] = 'roomType.meta_value IN ('.implode(",", $args['types']).')';
 
 
+        if ( count($whereClauses > 0) )
+            $query .= " WHERE " . implode( ' AND ', $whereClauses );
 
         $stmt = $this->getDB()->prepare( $query );
 
@@ -271,8 +273,27 @@ class UnoptimizedHotelService extends AbstractHotelService {
             /* suite a faire*/
 
 
+        $stmt->execute();
+        $filteredRooms = $stmt->fetchAll();
 
 
+        if ( count( $filteredRooms ) < 1 )
+            throw new FilterException( "Aucune chambre ne correspond aux critères" );
+
+
+        // Trouve le prix le plus bas dans les résultats de recherche
+        $cheapestRoom = null;
+        foreach ( $filteredRooms as $room ) :
+            if ( ! isset( $cheapestRoom ) ) {
+                $cheapestRoom = $room;
+                continue;
+            }
+
+            if ( intval( $room->getPrice() ) < intval( $cheapestRoom->getPrice() ) )
+                $cheapestRoom = $room;
+        endforeach;
+
+        
 
         $this ->timer ->endTimer("getCheapestRoom",$id);
 
