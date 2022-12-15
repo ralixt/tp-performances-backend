@@ -243,7 +243,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
         $query .= ' GROUP BY posts.post_author';
 
         if ( isset( $_GET['lat'] ) && isset( $_GET['lng'] )  && isset( $_GET['distance'] ))
-            $query .= 'HAVING distanceKM <= :distance';
+            $query .= ' HAVING distanceKM <= :distance';
 
         dump($query);
 
