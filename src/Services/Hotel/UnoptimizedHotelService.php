@@ -151,14 +151,12 @@ class UnoptimizedHotelService extends AbstractHotelService {
         posts.post_author AS postAuthor,
         USER.display_name AS hotelName,
         posts.post_title AS roomName,
-        CAST(surface.meta_value AS INT) AS surface,
-        CAST(
-            price.meta_value AS DECIMAL(10, 2)
-        ) AS price,
-        bedrooms_count.meta_value AS bedrooms,
-        bathrooms_count.meta_value AS bathrooms,
+        CAST(surface.meta_value AS UNSIGNED) AS surface,
+        MIN(CAST(price.meta_value AS UNSIGNED)) AS price,
+        CAST(bedrooms_count.meta_value AS UNSIGNED) AS bedrooms,
+        CAST(bathrooms_count.meta_value AS UNSIGNED) AS bathrooms,
         roomType.meta_value AS roomType,
-        coverImage.meta_value AS coverImage
+        coverImage.meta_value AS coverImage,
         latData.meta_value AS lat,
         lngData.meta_value AS lng";
 
@@ -169,37 +167,37 @@ class UnoptimizedHotelService extends AbstractHotelService {
             * COS(RADIANS( lngData.meta_value - :userLng ))
             + SIN(RADIANS( latData.meta_value ))
             * SIN(RADIANS( :userLat ))))) AS distanceKM";
-
         }
 
-        $query .="FROM wp_posts AS posts
+
+        $query .=" FROM wp_posts AS posts
         INNER JOIN wp_users AS USER
         ON
             USER.ID = posts.post_author
             
         INNER JOIN wp_postmeta AS surface
         ON
-            surface.post_id = posts.ID AND surface.meta_key = "surface"
+            surface.post_id = posts.ID AND surface.meta_key = 'surface'
            
         INNER JOIN wp_postmeta AS price
         ON
-            price.post_id = posts.ID AND price.meta_key = "price"
+            price.post_id = posts.ID AND price.meta_key = 'price'
             
         INNER JOIN wp_postmeta AS bedrooms_count
         ON
-            bedrooms_count.post_id = posts.ID AND bedrooms_count.meta_key = "bedrooms_count"
+            bedrooms_count.post_id = posts.ID AND bedrooms_count.meta_key = 'bedrooms_count'
             
         INNER JOIN wp_postmeta AS bathrooms_count
         ON
-            bathrooms_count.post_id = posts.ID AND bathrooms_count.meta_key = "bathrooms_count"
+            bathrooms_count.post_id = posts.ID AND bathrooms_count.meta_key = 'bathrooms_count'
             
         INNER JOIN wp_postmeta AS roomType
         ON
-            roomType.post_id = posts.ID AND roomType.meta_key = "type"
+            roomType.post_id = posts.ID AND roomType.meta_key = 'type'
             
         INNER JOIN wp_postmeta AS coverImage
         ON
-            coverImage.post_id = posts.ID AND coverImage.meta_key = "coverImage"
+            coverImage.post_id = posts.ID AND coverImage.meta_key = 'coverImage'
             
             
         INNER JOIN wp_usermeta AS latData 
@@ -239,10 +237,32 @@ class UnoptimizedHotelService extends AbstractHotelService {
             $whereClauses[] = 'roomType.meta_value IN ('.implode(",", $args['types']).')';
 
 
-        if ( count($whereClauses > 0) )
+        if ( count($whereClauses) > 0 )
             $query .= " WHERE " . implode( ' AND ', $whereClauses );
 
+        $query .= ' GROUP BY posts.post_author';
+
+        if ( isset( $_GET['lat'] ) && isset( $_GET['lng'] )  && isset( $_GET['distance'] ))
+            $query .= 'HAVING distanceKM <= :distance';
+
+        dump($query);
+
+
         $stmt = $this->getDB()->prepare( $query );
+
+
+        if ( isset( $_GET['lat'] ) && isset( $_GET['lng'] )  && isset( $_GET['distance'] )){
+            dump($_GET['lat']);
+            dump($_GET['lng']);
+            dump($_GET['distance']);
+            $stmt->bindParam('userLat', $_GET['lat'], PDO::PARAM_STR);
+            $stmt->bindParam('userLng', $_GET['lng'], PDO::PARAM_STR);
+            $stmt->bindParam('distance', $_GET['distance'], PDO::PARAM_INT);
+        }
+
+        /*if ( isset( $_GET['lat'] )){
+            $stmt->bindParam('userLat', $_GET['lat'], PDO::PARAM_INT);
+        }*/
 
 
 
@@ -267,32 +287,29 @@ class UnoptimizedHotelService extends AbstractHotelService {
         if ( isset( $args['bathRooms'] ))
             $stmt->bindParam('bathrooms', $args['bathRooms'], PDO::PARAM_INT);
 
-        if ( isset( $args['types'] ) && ! empty( $args['types'] ))
-            $stmt->bindParam('bathrooms', $args['bathRooms'], PDO::PARAM_INT);
-            $whereClauses[] = 'roomType.meta_value IN ('.implode(",", $args['types']).')'
-            /* suite a faire*/
-
 
         $stmt->execute();
         $filteredRooms = $stmt->fetchAll();
 
 
+        // Si aucune chambre ne correspond aux critères, alors on déclenche une exception pour retirer l'hôtel des résultats finaux de la méthode list().
         if ( count( $filteredRooms ) < 1 )
             throw new FilterException( "Aucune chambre ne correspond aux critères" );
 
 
         // Trouve le prix le plus bas dans les résultats de recherche
-        $cheapestRoom = null;
-        foreach ( $filteredRooms as $room ) :
-            if ( ! isset( $cheapestRoom ) ) {
-                $cheapestRoom = $room;
-                continue;
-            }
+        $filteredRooms = $filteredRooms[0];
+        $cheapestRoom = new RoomEntity();
+        $cheapestRoom->setId($filteredRooms['postAuthor']);
+        $cheapestRoom->setTitle($filteredRooms['roomName']);
+        $cheapestRoom->setSurface($filteredRooms['surface']);
+        $cheapestRoom->setPrice($filteredRooms['price']);
+        $cheapestRoom->setBedRoomsCount($filteredRooms['bedrooms']);
+        $cheapestRoom->setBathRoomsCount($filteredRooms['bathrooms']);
+        $cheapestRoom->setType($filteredRooms['roomType']);
+        $cheapestRoom->setCoverImageUrl($filteredRooms['coverImage']);
 
-            if ( intval( $room->getPrice() ) < intval( $cheapestRoom->getPrice() ) )
-                $cheapestRoom = $room;
-        endforeach;
-        
+
 
         $this ->timer ->endTimer("getCheapestRoom",$id);
 

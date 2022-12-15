@@ -10,12 +10,10 @@ SELECT
     posts.post_author AS postAuthor,
     USER.display_name AS hotelName,
     posts.post_title AS roomName,
-    CAST(surface.meta_value AS INT) AS surface,
-    CAST(
-        price.meta_value AS DECIMAL(10, 2)
-    ) AS price,
-    bedrooms_count.meta_value AS bedrooms,
-    bathrooms_count.meta_value AS bathrooms,
+    CAST(surface.meta_value AS UNSIGNED) AS surface,
+    MIN(CAST(price.meta_value AS UNSIGNED)) AS price,
+    CAST(bedrooms_count.meta_value AS UNSIGNED) AS bedrooms,
+    CAST(bathrooms_count.meta_value AS UNSIGNED) AS bathrooms,
     roomType.meta_value AS roomType,
     coverImage.meta_value AS coverImage,
     
@@ -39,27 +37,27 @@ ON
     
 INNER JOIN wp_postmeta AS surface
 ON
-    surface.post_id = posts.ID AND surface.meta_key = "surface"
+    surface.post_id = posts.ID AND surface.meta_key = 'surface'
    
 INNER JOIN wp_postmeta AS price
 ON
-    price.post_id = posts.ID AND price.meta_key = "price"
+    price.post_id = posts.ID AND price.meta_key = 'price'
     
 INNER JOIN wp_postmeta AS bedrooms_count
 ON
-    bedrooms_count.post_id = posts.ID AND bedrooms_count.meta_key = "bedrooms_count"
+    bedrooms_count.post_id = posts.ID AND bedrooms_count.meta_key = 'bedrooms_count'
     
 INNER JOIN wp_postmeta AS bathrooms_count
 ON
-    bathrooms_count.post_id = posts.ID AND bathrooms_count.meta_key = "bathrooms_count"
+    bathrooms_count.post_id = posts.ID AND bathrooms_count.meta_key = 'bathrooms_count'
     
 INNER JOIN wp_postmeta AS roomType
 ON
-    roomType.post_id = posts.ID AND roomType.meta_key = "type"
+    roomType.post_id = posts.ID AND roomType.meta_key = 'type'
     
 INNER JOIN wp_postmeta AS coverImage
 ON
-    coverImage.post_id = posts.ID AND coverImage.meta_key = "coverImage"
+    coverImage.post_id = posts.ID AND coverImage.meta_key = 'coverImage'
     
     
 INNER JOIN wp_usermeta AS latData 
@@ -81,5 +79,5 @@ WHERE
 
 GROUP BY posts.post_author
 
-HAVING distanceKM < :distanceKM;
+HAVING distanceKM <= :distance;
 
