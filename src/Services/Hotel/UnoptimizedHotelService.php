@@ -19,7 +19,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
   
   use SingletonTrait;
 
-    private Timers $timer;
+  private Timers $timer;
 
   protected function __construct () {
     parent::__construct( new RoomService() );
