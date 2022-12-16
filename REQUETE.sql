@@ -86,3 +86,6 @@ GROUP BY posts.post_author
 
 -- HAVING distanceKM <= :distance;
 
+
+
+
