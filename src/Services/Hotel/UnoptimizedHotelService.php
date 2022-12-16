@@ -147,27 +147,25 @@ class UnoptimizedHotelService extends AbstractHotelService {
         $id = $this -> timer ->startTimer("getCheapestRoom");
 
         $query = "SELECT
-        posts.ID AS postID,
+
         posts.post_author AS postAuthor,
-        USER.display_name AS hotelName,
+        
         posts.post_title AS roomName,
         CAST(surface.meta_value AS UNSIGNED) AS surface,
         MIN(CAST(price.meta_value AS UNSIGNED)) AS price,
         CAST(bedrooms_count.meta_value AS UNSIGNED) AS bedrooms,
         CAST(bathrooms_count.meta_value AS UNSIGNED) AS bathrooms,
         roomType.meta_value AS roomType,
-        coverImage.meta_value AS coverImage,
-        latData.meta_value AS lat,
-        lngData.meta_value AS lng";
+        coverImage.meta_value AS coverImage";
 
-        if(isset($_GET['lat']) && isset($_GET['lng'])  && isset($_GET['search'])  && isset($_GET['distance'])){
+        /*if(isset($_GET['lat']) && isset($_GET['lng'])  && isset($_GET['search']) && isset($args['distance']) ){
             $query .= ", 111.111
             * DEGREES(ACOS(LEAST(1.0, COS(RADIANS( latData.meta_value ))
             * COS(RADIANS( :userLat ))
             * COS(RADIANS( lngData.meta_value - :userLng ))
             + SIN(RADIANS( latData.meta_value ))
             * SIN(RADIANS( :userLat ))))) AS distanceKM";
-        }
+        }*/
 
 
         $query .=" FROM wp_posts AS posts
@@ -197,23 +195,13 @@ class UnoptimizedHotelService extends AbstractHotelService {
             
         INNER JOIN wp_postmeta AS coverImage
         ON
-            coverImage.post_id = posts.ID AND coverImage.meta_key = 'coverImage'
-            
-            
-        INNER JOIN wp_usermeta AS latData 
-        ON 
-            latData.user_id = user.ID AND latData.meta_key = 'geo_lat'
-        
-        INNER JOIN wp_usermeta AS lngData 
-        ON 
-            lngData.user_id = user.ID AND lngData.meta_key = 'geo_lng'
-        ";
+            coverImage.post_id = posts.ID AND coverImage.meta_key = 'coverImage'";
 
         $whereClauses = [];
         $hotelID = $hotel->getId();
 
-        if (isset($hotelID))
-            $whereClauses[] = 'posts.post_author = :hotelId AND post_type = "room"';
+
+        $whereClauses[] = 'posts.post_author = :hotelId AND post_type = "room"';
 
         if ( isset( $args['surface']['min'] ))
             $whereClauses[] = 'surface.meta_value >= :surfaceMin';
@@ -234,7 +222,7 @@ class UnoptimizedHotelService extends AbstractHotelService {
             $whereClauses[] = 'bathrooms_count.meta_value >= :bathrooms';
 
         if ( isset( $args['types'] ) && ! empty( $args['types'] ))
-            $whereClauses[] = 'roomType.meta_value IN ('.implode(",", $args['types']).')';
+            $whereClauses[] = "roomType.meta_value IN ('".implode("','", $args['types'])."')";
 
 
         if ( count($whereClauses) > 0 )
@@ -242,32 +230,28 @@ class UnoptimizedHotelService extends AbstractHotelService {
 
         $query .= ' GROUP BY posts.post_author';
 
-        if ( isset( $_GET['lat'] ) && isset( $_GET['lng'] )  && isset( $_GET['distance'] ))
-            $query .= ' HAVING distanceKM <= :distance';
+        /*if ( isset($args['lat']) && isset($args['lng'])  && isset($args['distance']) )
+            $query .= ' HAVING distanceKM <= :distance';*/
 
-        dump($query);
+        //dump($query);
 
 
         $stmt = $this->getDB()->prepare( $query );
 
 
-        if ( isset( $_GET['lat'] ) && isset( $_GET['lng'] )  && isset( $_GET['distance'] )){
-            dump($_GET['lat']);
-            dump($_GET['lng']);
-            dump($_GET['distance']);
-            $stmt->bindParam('userLat', $_GET['lat'], PDO::PARAM_STR);
-            $stmt->bindParam('userLng', $_GET['lng'], PDO::PARAM_STR);
-            $stmt->bindParam('distance', $_GET['distance'], PDO::PARAM_INT);
-        }
 
-        /*if ( isset( $_GET['lat'] )){
-            $stmt->bindParam('userLat', $_GET['lat'], PDO::PARAM_INT);
+        /*if ( isset($args['lat']) && isset($args['lng'])  && isset($args['distance']) ){
+
+            $stmt->bindParam('userLat', $args['lat'], PDO::PARAM_STR);
+            $stmt->bindParam('userLng', $args['lng'], PDO::PARAM_STR);
+            $stmt->bindParam('distance', $args['distance'], PDO::PARAM_INT);
         }*/
 
 
 
-        if (isset($hotelID))
-            $stmt->bindParam('hotelId', $hotelID, PDO::PARAM_INT);
+
+
+        $stmt->bindParam('hotelId', $hotelID, PDO::PARAM_INT);
 
         if ( isset( $args['surface']['min'] ))
             $stmt->bindParam('surfaceMin', $args['surface']['min'], PDO::PARAM_INT);

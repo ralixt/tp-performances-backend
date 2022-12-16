@@ -18,14 +18,16 @@ SELECT
     coverImage.meta_value AS coverImage,
     
     latData.meta_value AS lat,
-    lngData.meta_value AS lng,
+    lngData.meta_value AS lng
     
-    111.111
+    /*
+    , 111.111
         * DEGREES(ACOS(LEAST(1.0, COS(RADIANS( latData.meta_value ))
         * COS(RADIANS( :userLat ))
         * COS(RADIANS( lngData.meta_value - :userLng ))
         + SIN(RADIANS( latData.meta_value ))
         * SIN(RADIANS( :userLat ))))) AS distanceKM
+    */
     
 FROM
     wp_posts AS posts
@@ -59,7 +61,8 @@ INNER JOIN wp_postmeta AS coverImage
 ON
     coverImage.post_id = posts.ID AND coverImage.meta_key = 'coverImage'
     
-    
+
+/*    
 INNER JOIN wp_usermeta AS latData 
 ON 
     latData.user_id = user.ID AND latData.meta_key = 'geo_lat'
@@ -67,6 +70,8 @@ ON
 INNER JOIN wp_usermeta AS lngData 
 ON 
     lngData.user_id = user.ID AND lngData.meta_key = 'geo_lng'
+
+*/
 
 WHERE 
     posts.post_author = :hotelId AND post_type = 'room'
@@ -79,5 +84,5 @@ WHERE
 
 GROUP BY posts.post_author
 
-HAVING distanceKM <= :distance;
+-- HAVING distanceKM <= :distance;
 
