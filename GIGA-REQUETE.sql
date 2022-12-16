@@ -217,7 +217,10 @@ HAVING distanceKM < :distance;
 	
 
 -- Index
-
 CREATE INDEX postMeta_index ON wp_postmeta (post_id);
 CREATE INDEX posts_index ON wp_posts (post_author);
 CREATE INDEX usermeta_index ON wp_usermeta (user_id);
+
+
+
+
